@@ -133,7 +133,7 @@ def make_gif(files, output, delay=100, repeat=True, **kwargs):
 
     loop = -1 if repeat else 0
     os.system('convert -delay %d -loop %d %s %s' % (delay, loop, " ".join(files), output))
-
+    os.chmod(output, 0o755)  # -rwxr-xr-x
 
 
 
