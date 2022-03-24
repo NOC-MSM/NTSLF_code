@@ -151,6 +151,113 @@ def make_gif(files, output, delay=100, repeat=True, **kwargs):
     os.chmod(output, 0o755)  # -rwxr-xr-x
 
 
+def make_frame(lon:xr.DataArray=None,
+               lat:xr.DataArray=None,
+               var:xr.DataArray=None,
+               time:np.datetime64=np.datetime64('now'),
+               title_str:str="",
+               cbar_str:str="",
+               levels:np.array=None,
+               lon_bounds:[float,float]=None,
+               lat_bounds:[float,float]=None
+               ):
+    """
+    Plot a single map frame. Save to png
+    Inputs:
+        lon:xr.DataArray=None,
+        lat:xr.DataArray=None,
+        var:xr.DataArray=None,
+        time:np.datetime64=np.datetime64('now'),
+        title_str:str="",
+        cbar_str:str="",
+        levels:np.array=None,
+        lon_bounds:[float,float]=None,
+        lat_bounds:[float,float]=None
+    """
+
+    cmap0 = plt.cm.get_cmap('PiYG_r', 256)
+    cmap0.set_bad('#9b9b9b', 1.0)
+
+    if lon_bounds == None: lon_bounds = [lon.min(), lon.max()]
+    if lat_bounds == None: lat_bounds = [lat.min(), lat.max()]
+
+    f, a = create_geo_axes(lon_bounds, lat_bounds)
+
+    ## Contour fill surge + zero contour
+    sca = a.contourf(lon, lat, var,
+                     levels=levels,
+                     cmap=cmap0)
+    con = a.contour(lon, lat, var,
+                    levels=[0],
+                    linewidths=0.2,
+                    zorder=100)
+
+    ## title and timestamp
+    timestamp = np.datetime_as_string(dt64(time), unit="m")
+    a.set_title(title_str, fontsize=12)
+
+    ## Colorbar
+    cax = f.add_axes([0.77, 0.12, 0.02, 0.76])
+    norm = mpl.colors.BoundaryNorm(levels, cmap0.N, extend='both')
+    f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
+               cax=cax, orientation='vertical',
+               spacing='proportional',
+               label=cbar_str)
+
+    ## simulation timestamp
+    sim_str = filename.split('-')[0]
+    sim_timestamp = np.datetime64(
+        sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
+    a.text(lon_bounds[0] + 0.1, lat_bounds[1] - 0.1, sim_timestamp,
+           fontsize=6,
+           horizontalalignment='left',
+           verticalalignment='top'
+           )
+
+    ## Met Office credit
+    a.annotate('data source: Met Office',
+               xy=(0.03, 0.0),
+               fontsize=6,
+               xycoords='axes fraction',
+               horizontalalignment='left',
+               verticalalignment='bottom'
+               )
+
+    ## Logo
+    im = plt.imread(get_sample_data(logo_file))
+    # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
+    newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1)  ## lower left
+    newax.imshow(im)
+    newax.axis('off')
+
+    ## Clock
+    # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
+    clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
+    clock(clock_ax, dt64(time))
+
+    ## Liverpool
+    a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
+    a.annotate('Liverpool',
+               xy=(LIV_LON, LIV_LAT),
+               xytext=(LIV_LON, LIV_LAT),
+               textcoords='data',
+               fontsize=6,
+               horizontalalignment='left',
+               verticalalignment='bottom')
+
+    ## Southampton
+    a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
+    a.annotate('Southampton',
+               xy=(SOT_LON, SOT_LAT),
+               xytext=(SOT_LON, SOT_LAT),
+               textcoords='data',
+               fontsize=6,
+               horizontalalignment='left',
+               verticalalignment='bottom')
+
+    return f
+
+
 
 
 # Press the green button in the gutter to run the script.
@@ -163,10 +270,7 @@ if __name__ == '__main__':
     print(dirname + filename)
     ds = xr.load_dataset(dirname+filename)
 
-    MIN_LON = ds.longitude.min()
-    MAX_LON = ds.longitude.max()
-    MIN_LAT = ds.latitude.min()
-    MAX_LAT = ds.latitude.max()
+
 
     min_val = ds.zos_residual.min()
     max_val = ds.zos_residual.max()
@@ -174,116 +278,35 @@ if __name__ == '__main__':
     levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1]
 
     #levels = [-5,-4,-3,-2,-1,0,1,2,3,4,5]
-    extreme = max(abs(np.min(levels)), abs(np.max(levels)))
-    #max_lat = ds.latitude.max().values
     files   = []
 
 
     ## Create colorbar and nan color
-    #cmap0 = plt.cm.get_cmap('Spectral_r', 256)
     cmap0 = plt.cm.get_cmap('PiYG_r', 256)
     cmap0.set_bad('#9b9b9b', 1.0)
 
-    for count in range(len(ds.time)):
-        #for count in range(5):
-        ## Create figure and axes for plot
-        f, a = create_geo_axes([MIN_LON, MAX_LON], [MIN_LAT, MAX_LAT])
-
-        ## Contour fill surge + zero contour
-        sca = a.contourf(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
-                        levels=levels,
-                        #vmin=-extreme, vmax=extreme,
-                        cmap=cmap0)
-        #sca.set_clim([-extreme, extreme])
-        con = a.contour(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
-                  levels=[0],
-                  linewidths=0.2,
-                  zorder=100)
-
-        ## title and timestamp
+    #for count in range(len(ds.time)):
+    for count in range(5):
         timestamp = np.datetime_as_string(dt64(ds.time[count]), unit="m")
-        a.set_title(f'Surge forecast for {timestamp}',
-                    fontsize=12)
-
-        ## Colorbar
-        cax =f.add_axes([0.77, 0.12, 0.02, 0.76])
-        norm = mpl.colors.BoundaryNorm(levels, cmap0.N, extend='both')
-        #cbar = mpl.colorbar.ColorbarBase( cax, mpl.cm.ScalarMappable(norm=norm, cmap=cmap0) )
-        f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
-                     cax=cax, orientation='vertical',
-                     spacing='proportional',
-                     label="total water level - tide, in metres")
-        #cbar = mpl.colorbar.ColorbarBase(cax, orientation='horizontal',
-        #                            cmap=cmap0,
-        #                            norm=mpl.colors.Normalize(-extreme, extreme),
-        #                            extend='both'
-        #                            )
-        #cbar.set_label('total water level - tide, in metres')
-
-        ## simulation timestamp
-        sim_str = filename.split('-')[0]
-        sim_timestamp = np.datetime64( sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
-        a.text(MIN_LON+0.1, MAX_LAT-0.1, sim_timestamp,
-               fontsize=6,
-               horizontalalignment='left',
-               verticalalignment='top'
-               )
-
-        ## Met Office credit
-        #a.text(MIN_LON+0.5, MIN_LAT+0.1, 'data source: Met Office',
-        a.annotate( 'data source: Met Office',
-               xy=(0.03, 0.0),
-               fontsize=6,
-               xycoords = 'axes fraction',
-               horizontalalignment='left',
-               verticalalignment='bottom'
-               )
-
-        ## Logo
-        im = plt.imread(get_sample_data(logo_file))
-        #newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
-        newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1) ## lower left
-        newax.imshow(im)
-        newax.axis('off')
-
-        ## Clock
-        #clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
-        clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
-        clock(clock_ax, dt64(ds.time[count]))
-
-        ## Liverpool
-        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
-        a.annotate('Liverpool',
-                    xy=(LIV_LON, LIV_LAT),
-                    xytext=(LIV_LON, LIV_LAT),
-                    textcoords='data',
-                    fontsize=6,
-                    horizontalalignment='left',
-                    verticalalignment='bottom')
-
-
-        ## Southampton
-        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
-        a.annotate('Southampton',
-                    xy=(SOT_LON, SOT_LAT),
-                    xytext=(SOT_LON, SOT_LAT),
-                    textcoords='data',
-                    fontsize=6,
-                    horizontalalignment='left',
-                    verticalalignment='bottom')
-
+        f = make_frame(lon=ds.longitude,
+                        lat = ds.latitude,
+                        var = ds.zos_residual[count,:,:],
+                        time = ds.time[count],
+                        title_str = f'Surge forecast for {timestamp}',
+                        cbar_str = "total water level - tide, in metres",
+                        levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
+                        )
 
         ## OUTPUT FIGURES
         fname = fig_dir + filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
-        print(timestamp, fname)
+        print(count, fname)
         f.savefig(fname, dpi=100)
         plt.close()
 
         files.append(fname)
 
-    # Make the animated gif and clean up the files
+    ## Make the animated gif and clean up the frame files
     make_gif(files, ofile, delay=20)
-
     for f in files:
         os.remove(f)
 
