@@ -24,6 +24,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 from numpy import pi
 from matplotlib.cbook import get_sample_data
+import matplotlib.ticker as ticker
 import matplotlib as mpl
 import os, glob
 from math import cos, sin
@@ -46,7 +47,6 @@ elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
     logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
 else:
     print(f"Do not recognise hostname: {gethostname()}")
-
 
 MIN_LAT = 48
 MAX_LAT = 61
@@ -97,6 +97,8 @@ def clock(ax, now):
     hand_h_r = 0.3
     ax.plot([0.5, 0.5 + hand_h_r*cos(angles_h)], [0.5, 0.5 + hand_h_r*sin(angles_h)], color="black", linewidth=4)
     ax.plot([0.5, 0.5 + hand_m_r*cos(angles_m)], [0.5, 0.5 + hand_m_r*sin(angles_m)], color="black", linewidth=2)
+    timestamp = np.datetime_as_string(dt64(now), unit="m")
+    ax.text( 0.5, -0.2, timestamp, horizontalalignment='center', verticalalignment='top', fontsize='6')
     ax.grid(False)
     plt.axis('off')
     return ax
@@ -151,116 +153,159 @@ def make_gif(files, output, delay=100, repeat=True, **kwargs):
     os.chmod(output, 0o755)  # -rwxr-xr-x
 
 
-def make_frame(lon:xr.DataArray=None,
-               lat:xr.DataArray=None,
-               var:xr.DataArray=None,
-               time:np.datetime64=np.datetime64('now'),
-               title_str:str="",
-               cbar_str:str="",
-               levels:np.array=None,
-               lon_bounds:[float,float]=None,
-               lat_bounds:[float,float]=None
-               ):
-    """
-    Plot a single map frame. Save to png
-    Inputs:
-        lon:xr.DataArray=None,
-        lat:xr.DataArray=None,
-        var:xr.DataArray=None,
-        time:np.datetime64=np.datetime64('now'),
-        title_str:str="",
-        cbar_str:str="",
-        levels:np.array=None,
-        lon_bounds:[float,float]=None,
-        lat_bounds:[float,float]=None
-    """
+class Animate:
+    def __init__(self,
+                lon:xr.DataArray=None,
+                lat:xr.DataArray=None,
+                var:xr.DataArray=None,
+                time:xr.DataArray=None,
+                lon_bounds: [float, float] = None,
+                lat_bounds: [float, float] = None,
+                levels: list = [],
+                title_str='Surge forecast (m)',
+                cbar_str:str="",
+                filename:str="",
+                ofile:str=""
+                 ):
 
-    cmap0 = plt.cm.get_cmap('PiYG_r', 256)
-    cmap0.set_bad('#9b9b9b', 1.0)
 
-    if lon_bounds == None: lon_bounds = [lon.min(), lon.max()]
-    if lat_bounds == None: lat_bounds = [lat.min(), lat.max()]
+        self.lon = lon
+        self.lat = lat
+        self.var = var
+        self.time = time
+        self.levels = levels
+        self.title_str = title_str
+        self.cbar_str = cbar_str
 
-    f, a = create_geo_axes(lon_bounds, lat_bounds)
 
-    ## Contour fill surge + zero contour
-    sca = a.contourf(lon, lat, var,
-                     levels=levels,
-                     cmap=cmap0)
-    con = a.contour(lon, lat, var,
-                    levels=[0],
-                    linewidths=0.2,
-                    zorder=100)
+        #title_str = f'Surge forecast for {timestamp}'
+        self.filename = filename
+        self.ofile = ofile
+        if lon_bounds == None: self.lon_bounds = [lon.min(), lon.max()]
+        else: self.lon_bounds = lon_bounds
+        if lat_bounds == None: self.lat_bounds = [lat.min(), lat.max()]
+        else: self.lat_bounds = lat_bounds
 
-    ## title and timestamp
-    timestamp = np.datetime_as_string(dt64(time), unit="m")
-    a.set_title(title_str, fontsize=12)
+        self.process()
 
-    ## Colorbar
-    cax = f.add_axes([0.77, 0.12, 0.02, 0.76])
-    norm = mpl.colors.BoundaryNorm(levels, cmap0.N, extend='both')
-    f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
-               cax=cax, orientation='vertical',
-               spacing='proportional',
-               label=cbar_str)
+    def process(self):
+        files = []
+        #for count in range(2):
+        for count in range(len(self.time)):
+            self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
+            f = self.make_frame(count=count)
 
-    ## simulation timestamp
-    sim_str = filename.split('-')[0]
-    sim_timestamp = np.datetime64(
-        sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
-    a.text(lon_bounds[0] + 0.1, lat_bounds[1] - 0.1, sim_timestamp,
-           fontsize=6,
-           horizontalalignment='left',
-           verticalalignment='top'
-           )
+            ## OUTPUT FIGURES
+            fname = fig_dir + self.filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
+            print(count, fname)
+            f.savefig(fname, dpi=100)
 
-    ## Met Office credit
-    a.annotate('data source: Met Office',
-               xy=(0.03, 0.0),
+            files.append(fname)
+
+        ## Make the animated gif and clean up the frame files
+        make_gif(files, self.ofile, delay=20)
+        for f in files:
+            os.remove(f)
+
+        ## Make a backup copy of gif if the max surge is large enough
+        if "surge_anom_latest" in self.ofile and (self.var.max() > 1.0 or self.var.min() < -1.0):
+            print(f'Backing up {self.ofile}')
+            os.system(f'cp {self.ofile} {fig_dir + filename.replace(".nc", ".gif")}')
+
+
+
+    def make_frame(self, count:int=0):
+
+        cmap0 = plt.cm.get_cmap('PiYG_r', 256)
+        cmap0.set_bad('#9b9b9b', 1.0)
+
+        f, a = create_geo_axes(self.lon_bounds, self.lat_bounds)
+
+        ## Contour fill surge + zero contour
+        sca = a.contourf(self.lon, self.lat, self.var[count,:,:],
+                         levels=self.levels,
+                         cmap=cmap0)
+        con = a.contour(self.lon, self.lat, self.var[count,:,:],
+                        levels=[0],
+                        linewidths=0.2,
+                        zorder=100)
+
+        ## title and timestamp
+        a.set_title(self.title_str, fontsize=12)
+
+        ## Colorbar
+        cax = f.add_axes([0.77, 0.12, 0.02, 0.76])  # RHS
+        #cax = f.add_axes([0.23, 0.12, 0.02, 0.76])
+        norm = mpl.colors.BoundaryNorm(self.levels, cmap0.N, extend='both')
+        cbar=f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
+                   cax=cax, orientation='vertical',
+                   spacing='proportional',
+                   label=self.cbar_str,
+                   #format='% 1.1f',  # gives gap if +ve
+                   )
+        bare0 = lambda y, pos: ('%+g' if y > 0 else ('%-g' if y < 0 else '%g')) % y
+        cbar.ax.yaxis.set_major_formatter(ticker.FuncFormatter(bare0))
+        #cbar.ax.yaxis.set_ticks_position('left')
+        cbar.ax.tick_params(labelsize=8)
+        cbar.ax.tick_params(length=0)
+        cbar.ax.yaxis.set_tick_params(pad=0)
+
+        ## simulation timestamp
+        sim_str = filename.split('-')[0]
+        sim_timestamp = np.datetime64(
+            sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
+        a.text(self.lon_bounds[0] + 0.1, self.lat_bounds[1] - 0.1, sim_timestamp,
                fontsize=6,
-               xycoords='axes fraction',
                horizontalalignment='left',
-               verticalalignment='bottom'
+               verticalalignment='top'
                )
 
-    ## Logo
-    im = plt.imread(get_sample_data(logo_file))
-    # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
-    newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1)  ## lower left
-    newax.imshow(im)
-    newax.axis('off')
+        ## Met Office credit
+        a.annotate('data source: Met Office',
+                   xy=(0.03, 0.0),
+                   fontsize=6,
+                   xycoords='axes fraction',
+                   horizontalalignment='left',
+                   verticalalignment='bottom'
+                   )
 
-    ## Clock
-    # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
-    clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
-    clock(clock_ax, dt64(time))
+        ## Logo
+        im = plt.imread(get_sample_data(logo_file))
+        # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
+        newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1)  ## lower left
+        newax.imshow(im)
+        newax.axis('off')
 
-    ## Liverpool
-    a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
-    a.annotate('Liverpool',
-               xy=(LIV_LON, LIV_LAT),
-               xytext=(LIV_LON, LIV_LAT),
-               textcoords='data',
-               fontsize=6,
-               horizontalalignment='left',
-               verticalalignment='bottom')
-
-    ## Southampton
-    a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
-    a.annotate('Southampton',
-               xy=(SOT_LON, SOT_LAT),
-               xytext=(SOT_LON, SOT_LAT),
-               textcoords='data',
-               fontsize=6,
-               horizontalalignment='left',
-               verticalalignment='bottom')
-
-    return f
+        ## Clock
+        # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
+        clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
+        clock(clock_ax, dt64(self.time[count]))
 
 
+        ## Liverpool
+        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
+        a.annotate('Liverpool',
+                   xy=(LIV_LON, LIV_LAT),
+                   xytext=(LIV_LON, LIV_LAT),
+                   textcoords='data',
+                   fontsize=6,
+                   horizontalalignment='left',
+                   verticalalignment='top')
+
+        ## Southampton
+        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
+        a.annotate('Southampton',
+                   xy=(SOT_LON, SOT_LAT),
+                   xytext=(SOT_LON, SOT_LAT),
+                   textcoords='data',
+                   fontsize=6,
+                   horizontalalignment='center',
+                   verticalalignment='bottom')
+
+        return f
 
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     #filename = get_filename_today( np.datetime64('now') )  # update filename
     try:
@@ -270,46 +315,26 @@ if __name__ == '__main__':
     print(dirname + filename)
     ds = xr.load_dataset(dirname+filename)
 
+    animate = Animate(lon=ds.longitude,
+                      lat = ds.latitude,
+                      var=ds.zos_residual,
+                      time=ds.time,
+                      levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
+                      title_str='Surge forecast (m)',
+                      #cbar_str = "total water level - tide, in metres",
+                      cbar_str = "",
+                      filename=filename,
+                      ofile=fig_dir+'surge_anom_latest.gif')
 
-
-    min_val = ds.zos_residual.min()
-    max_val = ds.zos_residual.max()
-
-    levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1]
-
-    #levels = [-5,-4,-3,-2,-1,0,1,2,3,4,5]
-    files   = []
-
-
-    ## Create colorbar and nan color
-    cmap0 = plt.cm.get_cmap('PiYG_r', 256)
-    cmap0.set_bad('#9b9b9b', 1.0)
-
-    #for count in range(len(ds.time)):
-    for count in range(5):
-        timestamp = np.datetime_as_string(dt64(ds.time[count]), unit="m")
-        f = make_frame(lon=ds.longitude,
-                        lat = ds.latitude,
-                        var = ds.zos_residual[count,:,:],
-                        time = ds.time[count],
-                        title_str = f'Surge forecast for {timestamp}',
-                        cbar_str = "total water level - tide, in metres",
-                        levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
-                        )
-
-        ## OUTPUT FIGURES
-        fname = fig_dir + filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
-        print(count, fname)
-        f.savefig(fname, dpi=100)
-        plt.close()
-
-        files.append(fname)
-
-    ## Make the animated gif and clean up the frame files
-    make_gif(files, ofile, delay=20)
-    for f in files:
-        os.remove(f)
-
-    ## Make a backup copy of gif if the max surge is large enough
-    if ds.zos_residual.max() > 1.0 or ds.zos_residual.min() < -0.1:
-        os.system(f'cp {ofile} {fig_dir+filename.replace(".nc",".gif")}')
+    filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+    ds = xr.load_dataset(dirname + filename_ssh)
+    animate = Animate(lon=ds.longitude,
+                      lat = ds.latitude,
+                      var=ds.zos,
+                      time=ds.time,
+                      levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+                      title_str='Sea level forecast (m)',
+                      #cbar_str="total water level (m)",
+                      cbar_str="",
+                      filename=filename_ssh,
+                      ofile=fig_dir+'ssh_latest.gif')
