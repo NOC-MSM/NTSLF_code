@@ -214,15 +214,26 @@ if __name__ == '__main__':
                verticalalignment='top'
                )
 
+        ## Met Office credit
+        #a.text(MIN_LON+0.5, MIN_LAT+0.1, 'data source: Met Office',
+        a.annotate( 'data source: Met Office',
+               xy=(0.03, 0.0),
+               fontsize=6,
+               xycoords = 'axes fraction',
+               horizontalalignment='left',
+               verticalalignment='bottom'
+               )
+
         ## Logo
         im = plt.imread(get_sample_data(logo_file))
-
-        newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## x,y,sizeX,sizeY
+        #newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
+        newax = f.add_axes([0.12, 0.12, 0.2, 0.2], zorder=1) ## lower left
         newax.imshow(im)
         newax.axis('off')
 
         ## Clock
-        clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)
+        #clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
+        clock_ax = f.add_axes([0.75, 0.18, 0.1, 0.1], zorder=1)  ## lower right
         clock(clock_ax, dt64(ds.time[count]))
 
         ## Liverpool
