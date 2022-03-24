@@ -286,3 +286,7 @@ if __name__ == '__main__':
 
     for f in files:
         os.remove(f)
+
+    ## Make a backup copy of gif if the max surge is large enough
+    if ds.zos_residual.max() > 1.0 or ds.zos_residual.min() < -0.1:
+        os.system(f'cp {ofile} {fig_dir+filename.replace(".nc",".gif")}')
