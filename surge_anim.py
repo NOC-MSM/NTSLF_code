@@ -47,7 +47,7 @@ elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
 else:
     print(f"Do not recognise hostname: {gethostname()}")
 
-shetland = False  # Subplot box for Shetland, if the domain is going to be zoomed into mainland
+
 MIN_LAT = 48
 MAX_LAT = 61
 MIN_LON = -13
@@ -182,22 +182,6 @@ if __name__ == '__main__':
                   levels=[0],
                   linewidths=0.2,
                   zorder=100)
-
-        if(shetland):
-            bax =f.add_axes([0.13, 0.7, 0.12, 0.15], projection=ccrs.PlateCarree())
-            ## Create figure and axes for plot
-            ff, bax = create_geo_axes([-3, 0], [58, 61], fig=bax.figure, ax=bax)
-            ## Contour fill surge + zero contour
-            scot = bax.contourf(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
-                            vmin=-extreme, vmax=extreme,
-                            cmap=cmap0)
-
-            scot.set_clim([-extreme, extreme])
-            scot_con = bax.contour(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
-                      levels=[0],
-                      linewidths=0.5,
-                      zorder=100)
-            bax.set_aspect('auto')
 
         ## title and timestamp
         timestamp = np.datetime_as_string(dt64(ds.time[count]), unit="m")
