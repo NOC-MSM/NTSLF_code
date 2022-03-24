@@ -163,8 +163,9 @@ if __name__ == '__main__':
 
     min_val = ds.zos_residual.min()
     max_val = ds.zos_residual.max()
-    extreme = max(abs(min_val), abs(max_val))
-    max_lat = ds.latitude.max().values
+    levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1]
+    extreme = max(abs(np.min(levels)), abs(np.max(levels)))
+    #max_lat = ds.latitude.max().values
     files   = []
 
 
@@ -180,7 +181,8 @@ if __name__ == '__main__':
 
         ## Contour fill surge + zero contour
         sca = a.contourf(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
-                        vmin=-extreme, vmax=extreme,
+                        levels=levels,
+                        #vmin=-extreme, vmax=extreme,
                         cmap=cmap0)
         #sca.set_clim([-extreme, extreme])
         con = a.contour(ds.longitude, ds.latitude, ds.zos_residual[count,:,:],
@@ -199,6 +201,7 @@ if __name__ == '__main__':
         cbar = mpl.colorbar.ColorbarBase(cax, orientation='horizontal',
                                     cmap=cmap0,
                                     norm=mpl.colors.Normalize(-extreme, extreme),
+                                    extend='both'
                                     )
         cbar.set_label('total water level - tide, in metres')
 
