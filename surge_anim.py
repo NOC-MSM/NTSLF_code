@@ -35,16 +35,21 @@ from socket import gethostname
 
 if "LJOB" in gethostname().upper():  # Production job
     dirname  = '/projectsa/surge_archive/surge_forecast/'
-    filename = '20220320T1200Z-surge_noc_det-surge.nc'
+    #filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
+    #filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
     fig_dir   = '/projectsa/surge_archive/figures/'
     ofile     = fig_dir + 'surge_anom_latest.gif'
     logo_file = fig_dir + 'NOC_Colour.png'
+    filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
+    filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
 elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
     dirname = '/Users/jeff/Downloads/'
     fig_dir = dirname
     ofile     = fig_dir + 'surge_anom_latest.gif'
-    filename = '20220320T1200Z-surge_noc_det-surge.nc'
+    filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
     logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
+    filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+
 else:
     print(f"Do not recognise hostname: {gethostname()}")
 
@@ -73,9 +78,8 @@ def get_am_pm(now) -> str:
 def get_day(now) -> str:
     return now.astype(object).strftime('%a')
 
-def get_filename_today(now) -> str:
+def get_filename_today(now, tail:str='T1200Z-surge_noc_det-surge.nc') -> str:
     """ E.g. 20220320T1200Z-surge_noc_det-surge.nc """
-    tail = 'T1200Z-surge_noc_det-surge.nc'
     return now.astype(object).strftime('%Y%m%d')+tail
 
 def get_latest_surge_file() -> str:
@@ -210,7 +214,7 @@ class Animate:
         ## Make a backup copy of gif if the max surge is large enough
         if "surge_anom_latest" in self.ofile and (self.var.max() > 1.0 or self.var.min() < -1.0):
             print(f'Backing up {self.ofile}')
-            os.system(f'cp {self.ofile} {fig_dir + filename.replace(".nc", ".gif")}')
+            os.system(f'cp {self.ofile} {fig_dir + self.filename.replace(".nc", ".gif")}')
 
 
 
@@ -251,7 +255,7 @@ class Animate:
         cbar.ax.yaxis.set_tick_params(pad=0)
 
         ## simulation timestamp
-        sim_str = filename.split('-')[0]
+        sim_str = self.filename.split('-')[0]
         sim_timestamp = np.datetime64(
             sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
         a.text(self.lon_bounds[0] + 0.1, self.lat_bounds[1] - 0.1, sim_timestamp,
@@ -307,34 +311,41 @@ class Animate:
 
 
 if __name__ == '__main__':
-    #filename = get_filename_today( np.datetime64('now') )  # update filename
     try:
-        filename = get_latest_surge_file()  # update filename
+        #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')  # update filename
+        #filename_surge = get_latest_surge_file()  # update filename
+        ds = xr.load_dataset(dirname + filename_surge)
+        print(f'Processing {dirname + filename_surge}')
+        animate = Animate(lon=ds.longitude,
+                          lat = ds.latitude,
+                          var=ds.zos_residual,
+                          time=ds.time,
+                          levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
+                          title_str='Surge forecast (m)',
+                          cbar_str = "",
+                          filename=filename_surge,
+                          ofile=fig_dir+'surge_anom_latest.gif')
     except:
-        print('Use default filename: {filename}')
-    print(dirname + filename)
-    ds = xr.load_dataset(dirname+filename)
+        print(f'Filename: {filename_surge} not processed')
 
-    animate = Animate(lon=ds.longitude,
-                      lat = ds.latitude,
-                      var=ds.zos_residual,
-                      time=ds.time,
-                      levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
-                      title_str='Surge forecast (m)',
-                      #cbar_str = "total water level - tide, in metres",
-                      cbar_str = "",
-                      filename=filename,
-                      ofile=fig_dir+'surge_anom_latest.gif')
 
-    filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
-    ds = xr.load_dataset(dirname + filename_ssh)
-    animate = Animate(lon=ds.longitude,
-                      lat = ds.latitude,
-                      var=ds.zos,
-                      time=ds.time,
-                      levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                      title_str='Sea level forecast (m)',
-                      #cbar_str="total water level (m)",
-                      cbar_str="",
-                      filename=filename_ssh,
-                      ofile=fig_dir+'ssh_latest.gif')
+
+    try:
+        #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')  # update filename
+        #filename = get_latest_surge_file()  # update filename
+        ds = xr.load_dataset(dirname + filename_ssh)
+        print(f'Processing {dirname + filename_ssh}')
+
+        animate = Animate(lon=ds.longitude,
+                          lat = ds.latitude,
+                          var=ds.zos,
+                          time=ds.time,
+                          levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+                          title_str='Sea level forecast (m)',
+                          #cbar_str="total water level (m)",
+                          cbar_str="",
+                          filename=filename_ssh,
+                          ofile=fig_dir+'ssh_latest.gif')
+
+    except:
+        print(f'Filename: {filename_ssh} not processed')
