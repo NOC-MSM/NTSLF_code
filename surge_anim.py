@@ -33,26 +33,6 @@ from cartopy.feature import NaturalEarthFeature
 import xarray as xr
 from socket import gethostname
 
-if "LJOB" in gethostname().upper():  # Production job
-    dirname  = '/projectsa/surge_archive/surge_forecast/'
-    #filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
-    #filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
-    fig_dir   = '/projectsa/surge_archive/figures/'
-    ofile     = fig_dir + 'surge_anom_latest.gif'
-    logo_file = fig_dir + 'NOC_Colour.png'
-    filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
-    filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
-elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
-    dirname = '/Users/jeff/Downloads/'
-    fig_dir = dirname
-    ofile     = fig_dir + 'surge_anom_latest.gif'
-    filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
-    logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
-    filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
-
-else:
-    print(f"Do not recognise hostname: {gethostname()}")
-
 MIN_LAT = 48
 MAX_LAT = 61
 MIN_LON = -13
@@ -311,6 +291,29 @@ class Animate:
 
 
 if __name__ == '__main__':
+
+    if "LJOB" in gethostname().upper():  # Production job
+        dirname = '/projectsa/surge_archive/surge_forecast/'
+        # filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
+        # filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+        fig_dir = '/projectsa/surge_archive/figures/'
+        ofile = fig_dir + 'surge_anom_latest.gif'
+        logo_file = fig_dir + 'NOC_Colour.png'
+        filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
+        filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
+    elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
+        dirname = '/Users/jeff/Downloads/'
+        fig_dir = dirname
+        ofile = fig_dir + 'surge_anom_latest.gif'
+        filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
+        logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
+        filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+
+    else:
+        print(f"Do not recognise hostname: {gethostname()}")
+
+
+
     try:
         #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')  # update filename
         #filename_surge = get_latest_surge_file()  # update filename
