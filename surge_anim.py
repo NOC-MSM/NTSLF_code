@@ -53,6 +53,11 @@ MAX_LAT = 61
 MIN_LON = -13
 MAX_LON = 7
 
+LIV_LAT = 53 + 24.5/60
+LIV_LON = -(2+59.5/60)
+
+SOT_LAT = 50 + 54/60 + 9/3600
+SOT_LON = -(1+24/60+15/3600)
 
 #################### INTERNAL FCTNS #########################
 
@@ -216,6 +221,28 @@ if __name__ == '__main__':
         ## Clock
         clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)
         clock(clock_ax, dt64(ds.time[count]))
+
+        ## Liverpool
+        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
+        a.annotate('Liverpool',
+                    xy=(LIV_LON, LIV_LAT),
+                    xytext=(LIV_LON, LIV_LAT),
+                    textcoords='data',
+                    fontsize=6,
+                    horizontalalignment='left',
+                    verticalalignment='bottom')
+
+
+        ## Southampton
+        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
+        a.annotate('Southampton',
+                    xy=(SOT_LON, SOT_LAT),
+                    xytext=(SOT_LON, SOT_LAT),
+                    textcoords='data',
+                    fontsize=6,
+                    horizontalalignment='left',
+                    verticalalignment='bottom')
+
 
         ## OUTPUT FIGURES
         fname = fig_dir + filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
