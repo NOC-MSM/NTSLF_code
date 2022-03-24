@@ -131,7 +131,7 @@ def create_geo_axes(lonbounds, latbounds, fig=None, ax=None):
 
     coast = NaturalEarthFeature(category="physical", facecolor=[0.9, 0.9, 0.9], name="coastline", scale="50m")
     ax.add_feature(coast, edgecolor="gray")
-
+    ax.set_aspect(1 / np.cos(np.deg2rad(np.mean(latbounds))))
     ax.set_xlim(lonbounds[0], lonbounds[1])
     ax.set_ylim(latbounds[0], latbounds[1])
     ax.grid(False)
@@ -156,14 +156,24 @@ def make_gif(files, output, delay=100, repeat=True, **kwargs):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     #filename = get_filename_today( np.datetime64('now') )  # update filename
-    filename = get_latest_surge_file()  # update filename
+    try:
+        filename = get_latest_surge_file()  # update filename
+    except:
+        print('Use default filename: {filename}')
     print(dirname + filename)
     ds = xr.load_dataset(dirname+filename)
 
+    MIN_LON = ds.longitude.min()
+    MAX_LON = ds.longitude.max()
+    MIN_LAT = ds.latitude.min()
+    MAX_LAT = ds.latitude.max()
 
     min_val = ds.zos_residual.min()
     max_val = ds.zos_residual.max()
+
     levels = [-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1]
+
+    #levels = [-5,-4,-3,-2,-1,0,1,2,3,4,5]
     extreme = max(abs(np.min(levels)), abs(np.max(levels)))
     #max_lat = ds.latitude.max().values
     files   = []
@@ -175,7 +185,7 @@ if __name__ == '__main__':
     cmap0.set_bad('#9b9b9b', 1.0)
 
     for count in range(len(ds.time)):
-        #for count in range(1):
+        #for count in range(5):
         ## Create figure and axes for plot
         f, a = create_geo_axes([MIN_LON, MAX_LON], [MIN_LAT, MAX_LAT])
 
@@ -195,15 +205,20 @@ if __name__ == '__main__':
         a.set_title(f'Surge forecast for {timestamp}',
                     fontsize=12)
 
-
         ## Colorbar
-        cax =f.add_axes([0.13, 0.12, 0.76, 0.02])
-        cbar = mpl.colorbar.ColorbarBase(cax, orientation='horizontal',
-                                    cmap=cmap0,
-                                    norm=mpl.colors.Normalize(-extreme, extreme),
-                                    extend='both'
-                                    )
-        cbar.set_label('total water level - tide, in metres')
+        cax =f.add_axes([0.77, 0.12, 0.02, 0.76])
+        norm = mpl.colors.BoundaryNorm(levels, cmap0.N, extend='both')
+        #cbar = mpl.colorbar.ColorbarBase( cax, mpl.cm.ScalarMappable(norm=norm, cmap=cmap0) )
+        f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
+                     cax=cax, orientation='vertical',
+                     spacing='proportional',
+                     label="total water level - tide, in metres")
+        #cbar = mpl.colorbar.ColorbarBase(cax, orientation='horizontal',
+        #                            cmap=cmap0,
+        #                            norm=mpl.colors.Normalize(-extreme, extreme),
+        #                            extend='both'
+        #                            )
+        #cbar.set_label('total water level - tide, in metres')
 
         ## simulation timestamp
         sim_str = filename.split('-')[0]
@@ -227,13 +242,13 @@ if __name__ == '__main__':
         ## Logo
         im = plt.imread(get_sample_data(logo_file))
         #newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
-        newax = f.add_axes([0.12, 0.12, 0.2, 0.2], zorder=1) ## lower left
+        newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1) ## lower left
         newax.imshow(im)
         newax.axis('off')
 
         ## Clock
         #clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
-        clock_ax = f.add_axes([0.75, 0.18, 0.1, 0.1], zorder=1)  ## lower right
+        clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
         clock(clock_ax, dt64(ds.time[count]))
 
         ## Liverpool
