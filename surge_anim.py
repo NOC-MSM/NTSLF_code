@@ -30,12 +30,22 @@ from math import cos, sin
 import cartopy.crs as ccrs  # mapping plots
 from cartopy.feature import NaturalEarthFeature
 import xarray as xr
+from socket import gethostname
 
-dirname  = '/projectsa/surge_archive/surge_forecast/'
-filename = '20220320T1200Z-surge_noc_det-surge.nc'
-fig_dir   = '/projectsa/surge_archive/figures/'
-ofile     = fig_dir + 'surge_anom_latest.gif'
-logo_file = fig_dir + 'NOC_Colour.png'
+if "LJOB" in gethostname().upper():  # Production job
+    dirname  = '/projectsa/surge_archive/surge_forecast/'
+    filename = '20220320T1200Z-surge_noc_det-surge.nc'
+    fig_dir   = '/projectsa/surge_archive/figures/'
+    ofile     = fig_dir + 'surge_anom_latest.gif'
+    logo_file = fig_dir + 'NOC_Colour.png'
+elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
+    dirname = '/Users/jeff/Downloads/'
+    fig_dir = dirname
+    ofile     = fig_dir + 'surge_anom_latest.gif'
+    filename = '20220320T1200Z-surge_noc_det-surge.nc'
+    logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
+else:
+    print(f"Do not recognise hostname: {gethostname()}")
 
 shetland = False  # Subplot box for Shetland, if the domain is going to be zoomed into mainland
 MIN_LAT = 48
