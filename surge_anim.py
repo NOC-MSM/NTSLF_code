@@ -16,6 +16,14 @@ If already built:
     module load anaconda/5-2021
     conda activate /work/jelt/conda-env/ntslf_py39
 
+To run:
+    python surge_anim.py
+
+Know issues:
+    There is a know warning regarding conversion of timestamp to daylight savings:
+    "DeprecationWarning: parsing timezone aware datetimes is deprecated; this will raise an error in the future"
+    There is currently no official / best solution.
+
 """
 
 
@@ -32,6 +40,9 @@ import cartopy.crs as ccrs  # mapping plots
 from cartopy.feature import NaturalEarthFeature
 import xarray as xr
 from socket import gethostname
+import datetime
+from datetime import timezone
+import pytz
 
 MIN_LAT = 48
 MAX_LAT = 61
@@ -58,6 +69,14 @@ def get_am_pm(now) -> str:
 def get_day(now) -> str:
     return now.astype(object).strftime('%a')
 
+def to_localtime(now) -> np.datetime64:
+    """ UTC --> np.datetime64(GMT/BST), str(GMT/BST) """
+    datetime_obj_in = now.astype(object)
+    datetime_obj_out = datetime_obj_in.astimezone(pytz.timezone("Europe/London"))
+    if datetime_obj_out.dst() != datetime.timedelta(0,0): timezone_str = "BST"
+    else: timezone_str = "GMT"
+    return np.datetime64(datetime_obj_out), timezone_str
+
 def get_filename_today(now, tail:str='T1200Z-surge_noc_det-surge.nc') -> str:
     """ E.g. 20220320T1200Z-surge_noc_det-surge.nc """
     return now.astype(object).strftime('%Y%m%d')+tail
@@ -81,8 +100,6 @@ def clock(ax, now):
     hand_h_r = 0.3
     ax.plot([0.5, 0.5 + hand_h_r*cos(angles_h)], [0.5, 0.5 + hand_h_r*sin(angles_h)], color="black", linewidth=4)
     ax.plot([0.5, 0.5 + hand_m_r*cos(angles_m)], [0.5, 0.5 + hand_m_r*sin(angles_m)], color="black", linewidth=2)
-    timestamp = np.datetime_as_string(dt64(now), unit="m")
-    ax.text( 0.5, -0.2, timestamp, horizontalalignment='center', verticalalignment='top', fontsize='6')
     ax.grid(False)
     plt.axis('off')
     return ax
@@ -214,7 +231,7 @@ class Animate:
                         linewidths=0.2,
                         zorder=100)
 
-        ## title and timestamp
+        ## title
         a.set_title(self.title_str, fontsize=12)
 
         ## Colorbar
@@ -234,21 +251,12 @@ class Animate:
         cbar.ax.tick_params(length=0)
         cbar.ax.yaxis.set_tick_params(pad=0)
 
-        ## simulation timestamp
-        sim_str = self.filename.split('-')[0]
-        sim_timestamp = np.datetime64(
-            sim_str[0:4] + '-' + sim_str[4:6] + '-' + sim_str[6:8] + "T" + sim_str[9:11] + ':' + sim_str[11:13])
-        a.text(self.lon_bounds[0] + 0.1, self.lat_bounds[1] - 0.1, sim_timestamp,
-               fontsize=6,
-               horizontalalignment='left',
-               verticalalignment='top'
-               )
 
         ## Met Office credit
         a.annotate('data source: Met Office',
-                   xy=(0.03, 0.0),
+                   xy=(self.lon_bounds[0] + 0.1, self.lat_bounds[0] + 0.1),
                    fontsize=6,
-                   xycoords='axes fraction',
+                   xycoords='data',
                    horizontalalignment='left',
                    verticalalignment='bottom'
                    )
@@ -262,9 +270,17 @@ class Animate:
 
         ## Clock
         # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
+        dt64_now, timezone_str = to_localtime(dt64(self.time[count]))
         clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
-        clock(clock_ax, dt64(self.time[count]))
+        clock(clock_ax, dt64_now)
 
+        ## simulation timestamp
+        sim_timestamp = np.datetime_as_string(dt64_now, unit="m").replace('T', ' ')+" "+timezone_str
+        a.text(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1, sim_timestamp,
+               fontsize=6,
+               horizontalalignment='right',
+               verticalalignment='bottom'
+               )
 
         ## Liverpool
         a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
@@ -305,7 +321,7 @@ if __name__ == '__main__':
         dirname = '/Users/jeff/Downloads/'
         fig_dir = dirname
         ofile = fig_dir + 'surge_anom_latest.gif'
-        filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
+        filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
         logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
         filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
 
