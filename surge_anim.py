@@ -96,7 +96,7 @@ def get_latest_surge_file() -> str:
 
 def get_latest_filename_today(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
     """ Specify day but find hour. E.g. 20220320T*-surge_noc_det-surge.nc """
-    list_of_file = glob.glob(dirname + now.astype(object).strftime('%Y%m%dT')+"????"+tail)
+    list_of_files = glob.glob(dirname + now.astype(object).strftime('%Y%m%dT')+"????"+tail)
     return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
 def clock(ax, now):
@@ -336,8 +336,9 @@ if __name__ == '__main__':
         fig_dir = '/projectsa/surge_archive/figures/'
         ofile = fig_dir + 'surge_anom_latest.gif'
         logo_file = fig_dir + 'NOC_Colour.png'
-        filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
-        filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
+        #filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
+        filename_surge = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-surge.nc')
+        #filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
         filename_ssh = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-ssh.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
         dirname = '/Users/jeff/Downloads/'
@@ -350,14 +351,13 @@ if __name__ == '__main__':
     else:
         print(f"Do not recognise hostname: {gethostname()}")
 
-
+    plt.rcParams["text.usetex"] = True  # To enable latex interpreter used in title string
 
     try:
         #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')  # update filename
         #filename_surge = get_latest_surge_file()  # update filename
         ds = xr.load_dataset(dirname + filename_surge)
         print(f'Processing {dirname + filename_surge}')
-        plt.rcParams["text.usetex"] = True  # To enable latex interpreter used in title string
 
         animate = Animate(lon=ds.longitude,
                           lat = ds.latitude,
