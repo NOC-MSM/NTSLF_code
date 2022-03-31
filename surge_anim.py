@@ -94,6 +94,10 @@ def get_latest_surge_file() -> str:
     list_of_files = glob.glob(dirname+'*surge_noc_det-surge.nc') # * means all if need specific format then *.csv
     return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
+def get_latest_filename_today(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
+    """ Specify day but find hour. E.g. 20220320T*-surge_noc_det-surge.nc """
+    list_of_file = glob.glob(dirname + now.astype(object).strftime('%Y%m%dT')+"????"+tail)
+    return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
 def clock(ax, now):
     plt.ylim(0,1)
@@ -334,6 +338,7 @@ if __name__ == '__main__':
         logo_file = fig_dir + 'NOC_Colour.png'
         filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
         filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
+        filename_ssh = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-ssh.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
         dirname = '/Users/jeff/Downloads/'
         fig_dir = dirname
