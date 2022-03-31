@@ -5,6 +5,7 @@
 # 0 18 * * * /login/jelt/GitHub/NTSLF_code/run_surge_anim.sh
 
 source /packages/lmodmodules/apps/anaconda/5-2021/bin/activate /work/jelt/conda-env/ntslf_py39
+module load texlive
 #python Documents/my_python_file_name.py WRONG. SEPARATLY GO TO FOLDER THEN EXECUTE PYTHON
 cd /login/jelt/GitHub/NTSLF_code/  
 python surge_anim.py
