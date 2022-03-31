@@ -69,6 +69,15 @@ def get_am_pm(now) -> str:
 def get_day(now) -> str:
     return now.astype(object).strftime('%a')
 
+def timestamp_from_filename(filename:str) -> str:
+    """
+    filename like: "20220323T1200Z-surge_noc_det-ssh.nc"
+    """
+    if "/" in filename:
+        print(f"Expecting filename without full path, not {filename}")
+        return ""
+    return datetime.datetime.strptime( filename.split('-')[0], '%Y%m%dT%H%MZ').strftime('%Y-%m-%dT%H:%MZ')
+
 def to_localtime(now) -> np.datetime64:
     """ UTC --> np.datetime64(GMT/BST), str(GMT/BST) """
     datetime_obj_in = now.astype(object)
@@ -232,7 +241,7 @@ class Animate:
                         zorder=100)
 
         ## title
-        a.set_title(self.title_str, fontsize=12)
+        a.set_title(self.title_str, fontsize=8)
 
         ## Colorbar
         cax = f.add_axes([0.77, 0.12, 0.02, 0.76])  # RHS
@@ -274,13 +283,21 @@ class Animate:
         clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
         clock(clock_ax, dt64_now)
 
-        ## simulation timestamp
-        sim_timestamp = np.datetime_as_string(dt64_now, unit="m").replace('T', ' ')+" "+timezone_str
-        a.text(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1, sim_timestamp,
+        ## snapshot timestamp.
+        snapshot_timestamp = np.datetime_as_string(dt64_now, unit="m").replace('T', ' ')+" "+timezone_str
+        a.text(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1, snapshot_timestamp,
                fontsize=6,
                horizontalalignment='right',
                verticalalignment='bottom'
                )
+
+        ## simulation forecast timestamp
+        #sim_timestamp = np.datetime_as_string(dt64(self.time[0]), unit="m").replace('T', 'Z')
+        #a.text(self.lon_bounds[0] + 0.1, self.lat_bounds[1] - 0.1, "forecast start: "+sim_timestamp,
+        #       fontsize=6,
+        #       horizontalalignment='left',
+        #       verticalalignment='top'
+        #       )
 
         ## Liverpool
         a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
@@ -335,12 +352,14 @@ if __name__ == '__main__':
         #filename_surge = get_latest_surge_file()  # update filename
         ds = xr.load_dataset(dirname + filename_surge)
         print(f'Processing {dirname + filename_surge}')
+        plt.rcParams["text.usetex"] = True  # To enable latex interpreter used in title string
+
         animate = Animate(lon=ds.longitude,
                           lat = ds.latitude,
                           var=ds.zos_residual,
                           time=ds.time,
                           levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
-                          title_str='Surge forecast (m)',
+                          title_str=r"{{\Large Surge forecast (m)}}" + '\n' + f"{timestamp_from_filename(filename_surge)}",
                           cbar_str = "",
                           filename=filename_surge,
                           ofile=fig_dir+'surge_anom_latest.gif')
@@ -360,7 +379,7 @@ if __name__ == '__main__':
                           var=ds.zos,
                           time=ds.time,
                           levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                          title_str='Sea level forecast (m)',
+                          title_str=r"{{\Large Sea level forecast (m)}}" + '\n' + f"{timestamp_from_filename(filename_ssh)}",
                           #cbar_str="total water level (m)",
                           cbar_str="",
                           filename=filename_ssh,
