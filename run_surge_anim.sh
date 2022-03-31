@@ -11,3 +11,4 @@ module load texlive
 cd /login/jelt/GitHub/NTSLF_code/  
 python surge_anim.py
 conda deactivate
+module unload texlive
