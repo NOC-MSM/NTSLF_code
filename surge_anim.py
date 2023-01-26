@@ -20,9 +20,7 @@ To run:
     python surge_anim.py
 
 Know issues:
-    There is a know warning regarding conversion of timestamp to daylight savings:
-    "DeprecationWarning: parsing timezone aware datetimes is deprecated; this will raise an error in the future"
-    There is currently no official / best solution.
+    None
 
 """
 
@@ -80,11 +78,11 @@ def timestamp_from_filename(filename:str) -> str:
 
 def to_localtime(now) -> np.datetime64:
     """ UTC --> np.datetime64(GMT/BST), str(GMT/BST) """
-    datetime_obj_in = now.astype(object)
+    datetime_obj_in = now.astype(object).replace(tzinfo=timezone.utc)
     datetime_obj_out = datetime_obj_in.astimezone(pytz.timezone("Europe/London"))
     if datetime_obj_out.dst() != datetime.timedelta(0,0): timezone_str = "BST"
     else: timezone_str = "GMT"
-    return np.datetime64(datetime_obj_out), timezone_str
+    return np.datetime64(datetime_obj_out.replace(tzinfo=None)), timezone_str
 
 def get_filename_today(now, tail:str='T1200Z-surge_noc_det-surge.nc') -> str:
     """ E.g. 20220320T1200Z-surge_noc_det-surge.nc """
