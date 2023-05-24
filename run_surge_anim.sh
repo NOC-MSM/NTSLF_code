@@ -10,6 +10,6 @@ source /etc/profile.d/modules.sh
 module load texlive
 #python Documents/my_python_file_name.py WRONG. SEPARATLY GO TO FOLDER THEN EXECUTE PYTHON
 cd /login/jelt/GitHub/NTSLF_code/  
-python surge_anim.py
+python surge_anim.py > surge_anim.log
 conda deactivate
 module unload texlive
