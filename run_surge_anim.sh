@@ -7,9 +7,9 @@
 
 source /packages/lmodmodules/apps/anaconda/5-2021/bin/activate /work/jelt/conda-env/ntslf_py39
 source /etc/profile.d/modules.sh
-module load texlive
+#module load texlive
 #python Documents/my_python_file_name.py WRONG. SEPARATLY GO TO FOLDER THEN EXECUTE PYTHON
 cd /login/jelt/GitHub/NTSLF_code/  
 python surge_anim.py > surge_anim.log
 conda deactivate
-module unload texlive
+#module unload texlive
