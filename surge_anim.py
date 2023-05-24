@@ -342,11 +342,11 @@ if __name__ == '__main__':
         #filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
         filename_ssh = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-ssh.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
-        dirname = '/Users/jeff/Downloads/'
+        dirname = '/Users/jelt/Downloads/'
         fig_dir = dirname
         ofile = fig_dir + 'surge_anom_latest.gif'
         filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
-        logo_file = '/Users/jeff/Documents/presentations/figures/logos/NOC_Colour.png'
+        logo_file = '/Users/jelt/Library/CloudStorage/OneDrive-NOC/presentations/figures/logos/NOC_Colour.png'
         filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
 
     else:
