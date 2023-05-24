@@ -275,7 +275,7 @@ class Animate:
         ## Logo
         im = plt.imread(get_sample_data(logo_file))
         # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
-        newax = f.add_axes([0.25, 0.08, 0.2, 0.2], zorder=1)  ## lower left
+        newax = f.add_axes([0.27, 0.14, 0.1, 0.1], zorder=1)  ## lower left
         newax.imshow(im)
         newax.axis('off')
 
