@@ -175,6 +175,7 @@ class Animate:
                 lat_bounds: [float, float] = None,
                 levels: list = [],
                 title_str='Surge forecast (m)',
+                suptitle_str = '',
                 cbar_str:str="",
                 filename:str="",
                 ofile:str=""
@@ -187,6 +188,7 @@ class Animate:
         self.time = time
         self.levels = levels
         self.title_str = title_str
+        self.suptitle_str = suptitle_str
         self.cbar_str = cbar_str
 
 
@@ -243,7 +245,8 @@ class Animate:
                         zorder=100)
 
         ## title
-        a.set_title(self.title_str, fontsize=8)
+        f.suptitle(self.suptitle_str, fontsize=16, y=0.98) # label
+        a.set_title(self.title_str, fontsize=8)  # timestamp
 
         ## Colorbar
         cax = f.add_axes([0.77, 0.12, 0.02, 0.76])  # RHS
@@ -349,8 +352,6 @@ if __name__ == '__main__':
     else:
         print(f"Do not recognise hostname: {gethostname()}")
 
-    plt.rcParams["text.usetex"] = True  # To enable latex interpreter used in title string
-
     try:
         #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')  # update filename
         #filename_surge = get_latest_surge_file()  # update filename
@@ -362,7 +363,8 @@ if __name__ == '__main__':
                           var=ds.zos_residual,
                           time=ds.time,
                           levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
-                          title_str=r"{{\Large Surge forecast (m)}}" + '\n' + f"{timestamp_from_filename(filename_surge)}",
+                          suptitle_str = "Surge forecast (m)",
+                          title_str = timestamp_from_filename(filename_surge),
                           cbar_str = "",
                           filename=filename_surge,
                           ofile=fig_dir+'surge_anom_latest.gif')
@@ -382,8 +384,8 @@ if __name__ == '__main__':
                           var=ds.zos,
                           time=ds.time,
                           levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-                          title_str=r"{{\Large Sea level forecast (m)}}" + '\n' + f"{timestamp_from_filename(filename_ssh)}",
-                          #cbar_str="total water level (m)",
+                          suptitle_str= "Sea level forecast (m)",
+                          title_str= timestamp_from_filename(filename_ssh),
                           cbar_str="",
                           filename=filename_ssh,
                           ofile=fig_dir+'ssh_latest.gif')
