@@ -224,6 +224,7 @@ class Animate:
                 fname = self.ofile.replace('.gif', '_' + str(count).zfill(4) + '.svg')
                 print(count, fname)
                 f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+            plt.close(f)
 
             files.append(fname)
 
