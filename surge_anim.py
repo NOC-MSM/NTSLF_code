@@ -215,17 +215,22 @@ class Animate:
             self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
             f = self.make_frame(count=count)
 
-            ## OUTPUT FIGURES
-            fname = fig_dir + self.filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
-            print(count, fname)
-            f.savefig(fname, dpi=100)
+            ## OUTPUT FIGURES - png
+            if(0):
+                fname = fig_dir + self.filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
+                print(count, fname)
+                f.savefig(fname, dpi=100)
+            if(1):
+                fname = self.ofile.replace('.gif', '_' + str(count).zfill(4) + '.svg')
+                print(count, fname)
+                f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
 
             files.append(fname)
 
         ## Make the animated gif and clean up the frame files
         make_gif(files, self.ofile, delay=20)
         for f in files:
-            os.remove(f)
+            pass #os.remove(f)
 
         ## Make a backup copy of gif if the max surge is large enough
         if "surge_anom_latest" in self.ofile and (self.var.max() > 1.0 or self.var.min() < -1.0):
