@@ -126,7 +126,7 @@ def create_geo_axes(lonbounds, latbounds,
     For example:
 
     Example Useage
-    #############
+    ##############
 
         f,a = create_geo_axes(lonbounds, latbounds)
         sca = a.scatter(stats.longitude, stats.latitude, c=stats.corr,
@@ -142,7 +142,7 @@ def create_geo_axes(lonbounds, latbounds,
 
     # If no figure or ax is provided, create a new one
     if ax==None and fig==None:
-        fig = plt.figure(1)
+        fig = plt.figure()#figsize=(5,7))
         fig.clf()
         ax = fig.add_subplot(1, 1, 1, projection=projection)
 
@@ -264,8 +264,7 @@ class Animate:
         a.set_title(self.title_str, fontsize=8)  # timestamp
 
         ## Colorbar
-        cax = f.add_axes([0.77, 0.12, 0.02, 0.76])  # RHS
-        #cax = f.add_axes([0.23, 0.12, 0.02, 0.76])
+        cax = f.add_axes([0.78, 0.12, 0.02, 0.76])  # RHS
         norm = mpl.colors.BoundaryNorm(self.levels, cmap0.N, extend='both')
         cbar=f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
                    cax=cax, orientation='vertical',
@@ -300,7 +299,8 @@ class Animate:
         ## Clock
         # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
         dt64_now, timezone_str = to_localtime(dt64(self.time[count]))
-        clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
+        #clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
+        clock_ax = f.add_axes([0.65, 0.15, 0.1, 0.1], zorder=1)  ## lower right
         clock(clock_ax, dt64_now)
 
         ## snapshot timestamp.
@@ -344,7 +344,6 @@ class Animate:
                    fontsize=6,
                    horizontalalignment='center',
                    verticalalignment='bottom')
-
         return f
 
 
