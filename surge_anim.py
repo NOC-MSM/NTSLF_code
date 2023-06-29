@@ -212,8 +212,8 @@ class Animate:
 
     def process(self):
         files = []
-        #for count in range(2):
-        for count in range(len(self.time)):
+        for count in range(2):
+        #for count in range(len(self.time)):
             self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
             f = self.make_frame(count=count, cmap_str=self.cmap_str) #cmap_str="PiYG_r")
 
@@ -275,7 +275,7 @@ class Animate:
                    #format='% 1.1f',  # gives gap if +ve
                    )
         cbar.set_label(self.cbar_str, rotation=90, fontsize=6)
-        bare0 = lambda y, pos: ('%+g' if y > 0 else ('%-g' if y < 0 else '%g')) % y
+        bare0 = lambda y, pos: ('%+g' if y > 0 else ('%-g' if y < 0 else '% g')) % y
         cbar.ax.yaxis.set_major_formatter(ticker.FuncFormatter(bare0))
         #cbar.ax.yaxis.set_ticks_position('left')
         cbar.ax.tick_params(labelsize=8)
