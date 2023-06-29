@@ -42,10 +42,10 @@ import datetime
 from datetime import timezone
 import pytz
 
-MIN_LAT = 46.55#48
+MIN_LAT = 46.55
 MAX_LAT = 61
 MIN_LON = -13
-MAX_LON = 9.5 #7
+MAX_LON = 9.5
 
 LIV_LAT = 53 + 24.5/60
 LIV_LON = -(2+59.5/60)
@@ -123,6 +123,10 @@ def create_geo_axes(lonbounds, latbounds,
     A routine for creating an axis for any geographical plot. Within the
     specified longitude and latitude bounds, a map will be drawn up using
     cartopy. Any type of matplotlib plot can then be added to this figure.
+
+    Accommodates coordinate transforms from data's coordinates (data_crs) onto
+    a new coordinate system (projection).
+
     For example:
 
     Example Useage
@@ -146,7 +150,6 @@ def create_geo_axes(lonbounds, latbounds,
         fig.clf()
         ax = fig.add_subplot(1, 1, 1, projection=projection)
 
-    #ax.set_aspect(1 / np.cos(np.deg2rad(np.mean(latbounds))))
     ax.set_extent([lonbounds[0], lonbounds[1], latbounds[0], latbounds[1]],
                   crs=data_crs)
 
@@ -199,8 +202,6 @@ class Animate:
         self.proj = ccrs.Mercator()  # coord sys for projected (displayed) data
         self.data_crs = ccrs.PlateCarree() # coord sys of data
 
-
-        #title_str = f'Surge forecast for {timestamp}'
         self.filename = filename
         self.ofile = ofile
         if lon_bounds == None: self.lon_bounds = [lon.min(), lon.max()]
@@ -217,15 +218,10 @@ class Animate:
             self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
             f = self.make_frame(count=count, cmap_str=self.cmap_str) #cmap_str="PiYG_r")
 
-            ## OUTPUT FIGURES - png
-            if(0):
-                fname = fig_dir + self.filename.replace('.nc', '_' + str(count).zfill(4) + '.png')
-                print(count, fname)
-                f.savefig(fname, dpi=100)
-            if(1):
-                fname = self.ofile.replace('.gif', '_' + str(count).zfill(4) + '.svg')
-                print(count, fname)
-                f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+            ## OUTPUT FIGURES - svg
+            fname = self.ofile.replace('.gif', '_' + str(count).zfill(4) + '.svg')
+            print(count, fname)
+            f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
             plt.close(f)
 
             files.append(fname)
@@ -316,14 +312,6 @@ class Animate:
                    verticalalignment='bottom'
                    )
 
-        ## simulation forecast timestamp
-        #sim_timestamp = np.datetime_as_string(dt64(self.time[0]), unit="m").replace('T', 'Z')
-        #a.text(self.lon_bounds[0] + 0.1, self.lat_bounds[1] - 0.1, "forecast start: "+sim_timestamp,
-        #       fontsize=6,
-        #       horizontalalignment='left',
-        #       verticalalignment='top'
-        #       )
-
         ## Liverpool
         a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4,
                transform=self.data_crs)
@@ -376,8 +364,6 @@ if __name__ == '__main__':
         print(f"Do not recognise hostname: {gethostname()}")
 
     try:
-        #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')  # update filename
-        #filename_surge = get_latest_surge_file()  # update filename
         ds = xr.load_dataset(dirname + filename_surge)
         print(f'Processing {dirname + filename_surge}')
 
@@ -400,8 +386,6 @@ if __name__ == '__main__':
 
 
     try:
-        #filename = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')  # update filename
-        #filename = get_latest_surge_file()  # update filename
         ds = xr.load_dataset(dirname + filename_ssh)
         print(f'Processing {dirname + filename_ssh}')
 
