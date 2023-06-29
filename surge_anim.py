@@ -212,8 +212,8 @@ class Animate:
 
     def process(self):
         files = []
-        for count in range(2):
-        #for count in range(len(self.time)):
+        #for count in range(2):
+        for count in range(len(self.time)):
             self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
             f = self.make_frame(count=count, cmap_str=self.cmap_str) #cmap_str="PiYG_r")
 
