@@ -270,9 +270,9 @@ class Animate:
         cbar=f.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap0),
                    cax=cax, orientation='vertical',
                    spacing='proportional',
-                   label=self.cbar_str,
                    #format='% 1.1f',  # gives gap if +ve
                    )
+        cbar.set_label(self.cbar_str, rotation=90, fontsize=6)
         bare0 = lambda y, pos: ('%+g' if y > 0 else ('%-g' if y < 0 else '%g')) % y
         cbar.ax.yaxis.set_major_formatter(ticker.FuncFormatter(bare0))
         #cbar.ax.yaxis.set_ticks_position('left')
@@ -388,7 +388,7 @@ if __name__ == '__main__':
                           levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
                           suptitle_str = "Surge forecast (m)",
                           title_str = timestamp_from_filename(filename_surge),
-                          cbar_str = "",
+                          cbar_str = "relative to modelled tide",
                           filename=filename_surge,
                           ofile=fig_dir+'surge_anom_latest.gif')
     except:
@@ -411,7 +411,7 @@ if __name__ == '__main__':
                           levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
                           suptitle_str= "Sea level forecast (m)",
                           title_str= timestamp_from_filename(filename_ssh),
-                          cbar_str="",
+                          cbar_str="relative to model datum",
                           filename=filename_ssh,
                           ofile=fig_dir+'ssh_latest.gif')
 
