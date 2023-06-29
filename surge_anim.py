@@ -42,10 +42,10 @@ import datetime
 from datetime import timezone
 import pytz
 
-MIN_LAT = 48
+MIN_LAT = 46.55#48
 MAX_LAT = 61
 MIN_LON = -13
-MAX_LON = 7
+MAX_LON = 9.5 #7
 
 LIV_LAT = 53 + 24.5/60
 LIV_LON = -(2+59.5/60)
