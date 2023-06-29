@@ -181,6 +181,7 @@ class Animate:
                 title_str='Surge forecast (m)',
                 suptitle_str = '',
                 cbar_str:str="",
+                cmap_str:str="PiYG_r",
                 filename:str="",
                 ofile:str=""
                  ):
@@ -194,6 +195,7 @@ class Animate:
         self.title_str = title_str
         self.suptitle_str = suptitle_str
         self.cbar_str = cbar_str
+        self.cmap_str = cmap_str
         self.proj = ccrs.Mercator()  # coord sys for projected (displayed) data
         self.data_crs = ccrs.PlateCarree() # coord sys of data
 
