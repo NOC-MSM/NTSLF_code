@@ -115,7 +115,10 @@ def clock(ax, now):
     plt.axis('off')
     return ax
 
-def create_geo_axes(lonbounds, latbounds, fig=None, ax=None):
+def create_geo_axes(lonbounds, latbounds,
+                    fig=None, ax=None,
+                    projection=ccrs.PlateCarree(),
+                    data_crs=ccrs.PlateCarree()):
     """
     A routine for creating an axis for any geographical plot. Within the
     specified longitude and latitude bounds, a map will be drawn up using
@@ -141,13 +144,14 @@ def create_geo_axes(lonbounds, latbounds, fig=None, ax=None):
     if ax==None and fig==None:
         fig = plt.figure(1)
         fig.clf()
-        ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+        ax = fig.add_subplot(1, 1, 1, projection=projection)
+
+    #ax.set_aspect(1 / np.cos(np.deg2rad(np.mean(latbounds))))
+    ax.set_extent([lonbounds[0], lonbounds[1], latbounds[0], latbounds[1]],
+                  crs=data_crs)
 
     coast = NaturalEarthFeature(category="physical", facecolor=[0.9, 0.9, 0.9], name="coastline", scale="50m")
     ax.add_feature(coast, edgecolor="gray")
-    ax.set_aspect(1 / np.cos(np.deg2rad(np.mean(latbounds))))
-    ax.set_xlim(lonbounds[0], lonbounds[1])
-    ax.set_ylim(latbounds[0], latbounds[1])
     ax.grid(False)
 
     #plt.show()
@@ -190,6 +194,8 @@ class Animate:
         self.title_str = title_str
         self.suptitle_str = suptitle_str
         self.cbar_str = cbar_str
+        self.proj = ccrs.Mercator()  # coord sys for projected (displayed) data
+        self.data_crs = ccrs.PlateCarree() # coord sys of data
 
 
         #title_str = f'Surge forecast for {timestamp}'
@@ -233,16 +239,20 @@ class Animate:
         cmap0 = plt.cm.get_cmap('PiYG_r', 256)
         cmap0.set_bad('#9b9b9b', 1.0)
 
-        f, a = create_geo_axes(self.lon_bounds, self.lat_bounds)
+        f, a = create_geo_axes(self.lon_bounds, self.lat_bounds,
+                               projection=self.proj,
+                               data_crs=self.data_crs)
 
         ## Contour fill surge + zero contour
         sca = a.contourf(self.lon, self.lat, self.var[count,:,:],
                          levels=self.levels,
-                         cmap=cmap0)
+                         cmap=cmap0,
+                         transform=self.data_crs)
         con = a.contour(self.lon, self.lat, self.var[count,:,:],
                         levels=[0],
                         linewidths=0.2,
-                        zorder=100)
+                        zorder=100,
+                        transform=self.data_crs)
 
         ## title
         f.suptitle(self.suptitle_str, fontsize=16, y=0.98) # label
@@ -270,10 +280,10 @@ class Animate:
         a.annotate('data source: Met Office',
                    xy=(self.lon_bounds[0] + 0.1, self.lat_bounds[0] + 0.1),
                    fontsize=6,
-                   xycoords='data',
+                   xycoords = self.data_crs._as_mpl_transform(a),
+                   #xycoords='data',
                    horizontalalignment='left',
-                   verticalalignment='bottom'
-                   )
+                   verticalalignment='bottom')
 
         ## Logo
         im = plt.imread(get_sample_data(logo_file))
@@ -290,11 +300,13 @@ class Animate:
 
         ## snapshot timestamp.
         snapshot_timestamp = np.datetime_as_string(dt64_now, unit="m").replace('T', ' ')+" "+timezone_str
-        a.text(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1, snapshot_timestamp,
-               fontsize=6,
-               horizontalalignment='right',
-               verticalalignment='bottom'
-               )
+        a.annotate(snapshot_timestamp,
+                   xy=(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1),
+                   xycoords = self.data_crs._as_mpl_transform(a),
+                   fontsize=6,
+                   horizontalalignment='right',
+                   verticalalignment='bottom'
+                   )
 
         ## simulation forecast timestamp
         #sim_timestamp = np.datetime_as_string(dt64(self.time[0]), unit="m").replace('T', 'Z')
@@ -305,21 +317,25 @@ class Animate:
         #       )
 
         ## Liverpool
-        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4)
+        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4,
+               transform=self.data_crs)
         a.annotate('Liverpool',
                    xy=(LIV_LON, LIV_LAT),
                    xytext=(LIV_LON, LIV_LAT),
-                   textcoords='data',
+                   xycoords=self.data_crs._as_mpl_transform(a),#'data',
+                   textcoords=self.data_crs._as_mpl_transform(a),#'data',
                    fontsize=6,
                    horizontalalignment='left',
                    verticalalignment='top')
 
         ## Southampton
-        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4)
+        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4,
+               transform=self.data_crs)
         a.annotate('Southampton',
                    xy=(SOT_LON, SOT_LAT),
                    xytext=(SOT_LON, SOT_LAT),
-                   textcoords='data',
+                   xycoords=self.data_crs._as_mpl_transform(a),#'data',
+                   textcoords=self.data_crs._as_mpl_transform(a),#'data',
                    fontsize=6,
                    horizontalalignment='center',
                    verticalalignment='bottom')
@@ -362,6 +378,8 @@ if __name__ == '__main__':
                           lat = ds.latitude,
                           var=ds.zos_residual,
                           time=ds.time,
+                          lon_bounds=[MIN_LON, MAX_LON],
+                          lat_bounds=[MIN_LAT, MAX_LAT],
                           levels=[-1, -0.7, -0.3, -0.1, 0, 0.1, 0.3, 0.7, 1],
                           suptitle_str = "Surge forecast (m)",
                           title_str = timestamp_from_filename(filename_surge),
@@ -383,6 +401,8 @@ if __name__ == '__main__':
                           lat = ds.latitude,
                           var=ds.zos,
                           time=ds.time,
+                          lon_bounds=[MIN_LON, MAX_LON],
+                          lat_bounds=[MIN_LAT, MAX_LAT],
                           levels=[-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
                           suptitle_str= "Sea level forecast (m)",
                           title_str= timestamp_from_filename(filename_ssh),
