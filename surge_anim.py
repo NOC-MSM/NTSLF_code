@@ -213,7 +213,7 @@ class Animate:
         #for count in range(2):
         for count in range(len(self.time)):
             self.timestamp = np.datetime_as_string(dt64(self.time[count]), unit="m")
-            f = self.make_frame(count=count)
+            f = self.make_frame(count=count, cmap_str=self.cmap_str) #cmap_str="PiYG_r")
 
             ## OUTPUT FIGURES - png
             if(0):
@@ -240,10 +240,10 @@ class Animate:
 
 
 
-    def make_frame(self, count:int=0):
+    def make_frame(self, count:int=0, cmap_str="PiYG_r"):
 
-        cmap0 = plt.cm.get_cmap('PiYG_r', 256)
-        cmap0.set_bad('#9b9b9b', 1.0)
+        cmap0 = plt.cm.get_cmap(cmap_str, 256)
+        #cmap0.set_bad('#9b9b9b', 1.0)
 
         f, a = create_geo_axes(self.lon_bounds, self.lat_bounds,
                                projection=self.proj,
@@ -389,6 +389,7 @@ if __name__ == '__main__':
                           suptitle_str = "Surge forecast (m)",
                           title_str = timestamp_from_filename(filename_surge),
                           cbar_str = "relative to modelled tide",
+                          cmap_str = "PiYG_r",
                           filename=filename_surge,
                           ofile=fig_dir+'surge_anom_latest.gif')
     except:
@@ -412,6 +413,7 @@ if __name__ == '__main__':
                           suptitle_str= "Sea level forecast (m)",
                           title_str= timestamp_from_filename(filename_ssh),
                           cbar_str="relative to model datum",
+                          cmap_str="bwr", # "seismic",
                           filename=filename_ssh,
                           ofile=fig_dir+'ssh_latest.gif')
 
