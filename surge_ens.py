@@ -261,7 +261,7 @@ class Ensemble:
 
         ## Logo
         im = plt.imread(get_sample_data(logo_file))
-        axin = ax0.inset_axes([0.9, 0.03, 0.1, 0.1], zorder=1)
+        axin = ax0.inset_axes([0.9, 0.03, 0.1, 0.1], zorder=2)
         axin.imshow(im)
         axin.axis('off')
 
