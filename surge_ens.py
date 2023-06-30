@@ -161,7 +161,7 @@ if __name__ == '__main__':
         fig_dir = '/projectsa/surge_archive/figures/ensembles_latest/'
         ofile = fig_dir + 'surge_ens_latest.svg'
         logo_file = fig_dir + '../NOC_Colour.png'
-        filename_ens = get_latest_filename(np.datetime64('now'), tail='Z-surge_classa_ens-surge.nc')
+        filename_ens = get_latest_filename(tail='Z-surge_classa_ens-surge.nc')
         filename_det = "latest_surge_classa_det-surge.nc" #get_latest_filename(np.datetime64('now'), tail='Z-surge_classa_det-surge.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
         dirname = '/Users/jelt/Downloads/'
