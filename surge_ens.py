@@ -21,13 +21,17 @@ import xarray as xr
 from socket import gethostname
 import datetime
 
-def get_latest_filename(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
-    """ Specify day but find hour. E.g. 20220320T*-surge_noc_det-surge.nc """
+def get_latest_filename(tail:str='Z-surge_noc_det-surge.nc') -> str:
+    """ Get latest file from list. E.g. *-surge_noc_det-surge.nc """
     list_of_files = glob.glob(dirname + "*"+tail)
     return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
 def timestamp_from_ds(ds:xr.DataArray) -> str:
-    return np.datetime_as_string(ds.forecast_reference_time.values, 'm')
+    """ Get formatted timestamp from dataarray """
+    try:
+        return np.datetime_as_string(ds.forecast_reference_time.values, 'm')
+    except:
+        return "yyyy-mm-ddThh:00"
 
 def timestamp_from_filename(filename:str) -> str:
     """
@@ -123,8 +127,6 @@ class Ensemble:
         suptitle_str = f"Ensemble surge forecast for {station_str}"
         ens_timestamp_str = timestamp_from_ds(ds_ens)
         det_timestamp_str = timestamp_from_ds(ds_det)
-        #ens_timestamp_str = timestamp_from_filename(filename_ens)
-        #det_timestamp_str = timestamp_from_filename(filename_det)
         fig.suptitle(suptitle_str, fontsize=16, y=0.98) # Station title
         ax0.set_title(f"ensemble: {ens_timestamp_str}\ndeterministic: {det_timestamp_str}", fontsize=8)  # timestamp
 
