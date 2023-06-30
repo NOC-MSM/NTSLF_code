@@ -57,9 +57,130 @@ class Ensemble:
     def process(self):
         if self.ds_ens is not None:
             self.make_ensemble_line_plot()
+            self.make_ensemble_line_plot_v2()
         else:
             print(f"Need to load ensemble dataarray")
 
+
+    def make_ensemble_line_plot_v2(self):
+        ds = self.ds_ens
+        station_id = self.station_id
+
+        station_str = (ds.station_name[station_id].data.astype('str')).flatten()[0]  # extract station name string from dataarray
+
+        # Construct LineCollection to handle multiline plot of segments. Need to convert time into numbers for this function
+        x = mdates.date2num(ds.time)
+        ys = (self.ds_ens.zos_residual + self.ds_ens.zos_tide.broadcast_like(self.ds_ens.zos_residual)).isel(station=station_id).values
+        z0 = -np.nanmin(ys) # fake z0
+        ys = ys + z0
+
+        segs = np.zeros((ds.dims['realization'], ds.dims['time'], 2))
+        segs[:, :, 1] = ys
+        segs[:, :, 0] = x
+
+        line_segments = LineCollection(segs, linewidths=1, #linewidths=(0.5, 1, 1.5, 2),
+                                       colors='grey', linestyle='solid', alpha=0.5)
+
+        ## Plot it
+
+        fig = plt.figure(figsize=(8, 6))
+        # Add a gridspec with two rows and two columns and a ratio of 1 to 3 between
+        # the size of the marginal axes and the main axes in both directions.
+        # Also adjust the subplot parameters for a square plot.
+        gs = fig.add_gridspec(2, 1,  height_ratios=(3, 1),
+                              left=0.1, right=0.9, bottom=0.1, top=0.9,
+                              hspace=0.1)
+        # Create the Axes.
+        ax0 = fig.add_subplot(gs[0])
+        ax1 = fig.add_subplot(gs[1])#, sharex=ax0)
+
+        ## Plot the ensemble ssh segments
+        ax0.set_xlim(x.min(), x.max())
+        ax0.set_ylim(np.nanmin(ys), np.nanmax(ys))
+        ax0.add_collection(line_segments)
+
+        # Add the tide
+        ax0.plot( ds_ens.time,
+                  ds_ens.zos_tide.isel(station=station_id).values
+                  + z0, linewidth=0.5, color='k', linestyle='solid')
+
+        # Add the deterministic forecast
+        ax0.plot( ds_det.time,
+                  (ds_det.zos_residual+ds_det.zos_tide).isel(station=station_id).values
+                  + z0)
+
+        ax0.set_ylabel('tide + surge (m)')
+
+        day_format = DateFormatter("%a")
+        ax0.xaxis.set_major_formatter(day_format)
+        ax0.xaxis_date()
+
+        ## Plot the surge ensemble
+        # Construct LineCollection to handle multiline plot of segments. Need to convert time into numbers for this function
+        x = mdates.date2num(ds.time)
+        ys = self.ds_ens.zos_residual.isel(station=station_id).values
+
+        segs = np.zeros((ds.dims['realization'], ds.dims['time'], 2))
+        segs[:, :, 1] = ys
+        segs[:, :, 0] = x
+
+        line_segments = LineCollection(segs, linewidths=1,
+                                       colors='grey', linestyle='solid', alpha=0.5)
+
+
+        ## Plot the ensemble segments
+        ax1.set_xlim(x.min(), x.max())
+        ax1.set_ylim(np.nanmin(ys), np.nanmax(ys))
+        ax1.add_collection(line_segments)
+        # Add the deterministic forecast
+        ax1.plot( ds_det.time,
+                  ds_det.zos_residual.isel(station=station_id).values)
+        ax1.set_ylabel('surge (m)')
+
+        ax1.set_xlim(x.min(), x.max())
+
+        date_format = DateFormatter("%d-%b-%Y")
+        ax1.xaxis.set_major_formatter(date_format)
+        ax1.xaxis_date()
+        ax1.xaxis.set_tick_params(rotation=40)
+
+
+        ## title
+        suptitle_str = f"Ensemble sea level forecast for {station_str}"
+        ens_timestamp_str = timestamp_from_ds(ds_ens)
+        det_timestamp_str = timestamp_from_ds(ds_det)
+        fig.suptitle(suptitle_str, fontsize=16, y=0.98) # Station title
+        ax0.set_title(f"ensemble: {ens_timestamp_str}\ndeterministic: {det_timestamp_str}", fontsize=8)  # timestamp
+
+        ## Met Office credit
+        ax1.annotate(f"data source: Met Office",
+                   xy=(ax1.get_xlim()[1] - 0.1, ax1.get_ylim()[0] ),
+                   fontsize=6,
+                   xycoords='data',
+                   horizontalalignment='right',
+                   verticalalignment='bottom')
+
+        ## Logo
+        im = plt.imread(get_sample_data(logo_file))
+        axin = ax1.inset_axes([0.8, 0.12, 0.3, 0.3], zorder=2)
+        axin.imshow(im)
+        axin.axis('off')
+
+        ## z0 note
+        ax0.annotate(f"inc. fake z0",
+                   xy=(ax0.get_xlim()[0] + 0.1, ax0.get_ylim()[0] ),
+                   fontsize=12,
+                   xycoords='data',
+                   horizontalalignment='left',
+                   verticalalignment='bottom')
+
+        plt.show()
+
+        ## OUTPUT FIGURES - svg
+        fname = ofile.replace('.svg', '_' + str(station_id).zfill(4) + '_v2.svg')
+        print(f"Save {fname}")
+        fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+        plt.close(fig)
 
     def make_ensemble_line_plot(self):
         ds = self.ds_ens
@@ -102,7 +223,7 @@ class Ensemble:
 
         ## Plot the ensemble segments
         ax0.set_xlim(x.min(), x.max())
-        ax0.set_ylim(ys.min(), ys.max())
+        ax0.set_ylim(np.nanmin(ys), np.nanmax(ys))
         ax0.add_collection(line_segments)
         # Add the deterministic forecast
         ax0.plot( ds_det.time, ds_det.zos_residual.isel(station=station_id).values)
