@@ -15,7 +15,7 @@ import matplotlib.dates as mdates
 from matplotlib.dates import DateFormatter
 from matplotlib.cbook import get_sample_data
 
-
+import glob
 import numpy as np
 import xarray as xr
 from socket import gethostname
