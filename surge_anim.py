@@ -379,7 +379,7 @@ if __name__ == '__main__':
                           cbar_str = "relative to modelled tide",
                           cmap_str = "PiYG_r",
                           filename=filename_surge,
-                          ofile=fig_dir+'surge_anom_latest.gif')
+                          ofile=fig_dir+'surge_anom_latest/surge_anom_latest.gif')
     except:
         print(f'Filename: {filename_surge} not processed')
 
@@ -401,7 +401,7 @@ if __name__ == '__main__':
                           cbar_str="relative to model datum",
                           cmap_str="bwr", # "seismic",
                           filename=filename_ssh,
-                          ofile=fig_dir+'ssh_latest.gif')
+                          ofile=fig_dir+'ssh_latest/ssh_latest.gif')
 
     except:
         print(f'Filename: {filename_ssh} not processed')
