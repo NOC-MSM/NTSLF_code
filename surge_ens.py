@@ -21,6 +21,11 @@ import xarray as xr
 from socket import gethostname
 import datetime
 
+def get_latest_filename_today(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
+    """ Specify day but find hour. E.g. 20220320T*-surge_noc_det-surge.nc """
+    list_of_files = glob.glob(dirname + now.astype(object).strftime('%Y%m%dT')+"????"+tail)
+    return max(list_of_files, key=os.path.getctime).split('/')[-1]
+
 def timestamp_from_filename(filename:str) -> str:
     """
     filename like: "20220323T1200Z-surge_noc_det-ssh.nc"
