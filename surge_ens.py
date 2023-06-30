@@ -26,6 +26,9 @@ def get_latest_filename(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
     list_of_files = glob.glob(dirname + "*"+tail)
     return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
+def timestamp_from_ds(ds:xr.DataArray) -> str:
+    return np.datetime_as_string(ds.forecast_reference_time.values, 'm')
+
 def timestamp_from_filename(filename:str) -> str:
     """
     filename like: "20220323T1200Z-surge_noc_det-ssh.nc"
@@ -118,8 +121,10 @@ class Ensemble:
 
         ## title
         suptitle_str = f"Ensemble surge forecast for {station_str}"
-        ens_timestamp_str = timestamp_from_filename(filename_ens)
-        det_timestamp_str = timestamp_from_filename(filename_det)
+        ens_timestamp_str = timestamp_from_ds(ds_ens)
+        det_timestamp_str = timestamp_from_ds(ds_det)
+        #ens_timestamp_str = timestamp_from_filename(filename_ens)
+        #det_timestamp_str = timestamp_from_filename(filename_det)
         fig.suptitle(suptitle_str, fontsize=16, y=0.98) # Station title
         ax0.set_title(f"ensemble: {ens_timestamp_str}\ndeterministic: {det_timestamp_str}", fontsize=8)  # timestamp
 
