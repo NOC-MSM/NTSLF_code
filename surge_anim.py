@@ -228,6 +228,7 @@ class Animate:
 
         ## Make the animated gif and clean up the frame files
         make_gif(files, self.ofile, delay=20)
+        os.system(f'mv {self.ofile} ../.')  # move file down tree one directory
         for f in files:
             pass #os.remove(f)
 
