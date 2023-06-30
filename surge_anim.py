@@ -186,7 +186,8 @@ class Animate:
                 cbar_str:str="",
                 cmap_str:str="PiYG_r",
                 filename:str="",
-                ofile:str=""
+                ofile_gif:str="",
+                ofile_svg:str="",
                  ):
 
 
@@ -203,7 +204,8 @@ class Animate:
         self.data_crs = ccrs.PlateCarree() # coord sys of data
 
         self.filename = filename
-        self.ofile = ofile
+        self.ofile_gif = ofile_gif
+        self.ofile_svg = ofile_svg
         if lon_bounds == None: self.lon_bounds = [lon.min(), lon.max()]
         else: self.lon_bounds = lon_bounds
         if lat_bounds == None: self.lat_bounds = [lat.min(), lat.max()]
@@ -219,7 +221,7 @@ class Animate:
             f = self.make_frame(count=count, cmap_str=self.cmap_str) #cmap_str="PiYG_r")
 
             ## OUTPUT FIGURES - svg
-            fname = self.ofile.replace('.gif', '_' + str(count).zfill(4) + '.svg')
+            fname = self.ofile_svg.replace('.svg', '_' + str(count).zfill(4) + '.svg')
             print(count, fname)
             f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
             plt.close(f)
@@ -227,15 +229,14 @@ class Animate:
             files.append(fname)
 
         ## Make the animated gif and clean up the frame files
-        make_gif(files, self.ofile, delay=20)
-        os.system(f'mv {self.ofile} ../.')  # move file down tree one directory
+        make_gif(files, self.ofile_gif, delay=20)
         for f in files:
             pass #os.remove(f)
 
         ## Make a backup copy of gif if the max surge is large enough
-        if "surge_anom_latest" in self.ofile and (self.var.max() > 1.0 or self.var.min() < -1.0):
-            print(f'Backing up {self.ofile}')
-            os.system(f'cp {self.ofile} {fig_dir + self.filename.replace(".nc", ".gif")}')
+        if "surge_anom_latest" in self.ofile_gif and (self.var.max() > 1.0 or self.var.min() < -1.0):
+            print(f'Backing up {self.ofile_gif}')
+            os.system(f'cp {self.ofile_gif} {fig_dir + self.filename.replace(".nc", ".gif")}')
 
 
 
@@ -347,7 +348,8 @@ if __name__ == '__main__':
         # filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
         # filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
         fig_dir = '/projectsa/surge_archive/figures/'
-        ofile = fig_dir + 'surge_anom_latest.gif'
+        #ofile_gif = fig_dir + 'surge_anom_latest.gif'
+        #ofile_svg = fig_dir + 'surge_anom_latest.svg'
         logo_file = fig_dir + 'NOC_Colour.png'
         #filename_surge = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-surge.nc')
         filename_surge = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-surge.nc')
@@ -356,7 +358,8 @@ if __name__ == '__main__':
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
         dirname = '/Users/jelt/Downloads/'
         fig_dir = dirname
-        ofile = fig_dir + 'surge_anom_latest.gif'
+        #ofile_gif = fig_dir + 'surge_anom_latest.gif'
+        #ofile_svg = fig_dir + 'surge_anom_latest.svg'
         filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
         logo_file = '/Users/jelt/Library/CloudStorage/OneDrive-NOC/presentations/figures/logos/NOC_Colour.png'
         filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
@@ -380,7 +383,8 @@ if __name__ == '__main__':
                           cbar_str = "relative to modelled tide",
                           cmap_str = "PiYG_r",
                           filename=filename_surge,
-                          ofile=fig_dir+'surge_anom_latest/surge_anom_latest.gif')
+                          ofile_svg=fig_dir+'surge_anom_latest/surge_anom_latest.svg',
+                          ofile_gif=fig_dir+'surge_anom_latest.gif')
     except:
         print(f'Filename: {filename_surge} not processed')
 
@@ -402,7 +406,8 @@ if __name__ == '__main__':
                           cbar_str="relative to model datum",
                           cmap_str="bwr", # "seismic",
                           filename=filename_ssh,
-                          ofile=fig_dir+'ssh_latest/ssh_latest.gif')
+                          ofile_svg=fig_dir+'ssh_latest/ssh_latest.svg',
+                          ofile_gif=fig_dir+'ssh_latest.gif')
 
     except:
         print(f'Filename: {filename_ssh} not processed')
