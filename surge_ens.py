@@ -21,9 +21,9 @@ import xarray as xr
 from socket import gethostname
 import datetime
 
-def get_latest_filename_today(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
+def get_latest_filename(now, tail:str='Z-surge_noc_det-surge.nc') -> str:
     """ Specify day but find hour. E.g. 20220320T*-surge_noc_det-surge.nc """
-    list_of_files = glob.glob(dirname + now.astype(object).strftime('%Y%m%dT')+"????"+tail)
+    list_of_files = glob.glob(dirname + "*"+tail)
     return max(list_of_files, key=os.path.getctime).split('/')[-1]
 
 def timestamp_from_filename(filename:str) -> str:
@@ -152,10 +152,10 @@ if __name__ == '__main__':
     if "LJOB" in gethostname().upper():  # Production job
         dirname = '/projectsa/surge_archive/surge_forecast/'
         fig_dir = '/projectsa/surge_archive/figures/ensembles_latest/'
-        ofile = fig_dir + 'surge_ens_latest.gif'
-        logo_file = fig_dir + 'NOC_Colour.png'
-        filename_ens = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_classa_ens-surge.nc')
-        filename_det = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_classa_det-surge.nc')
+        ofile = fig_dir + 'surge_ens_latest.svg'
+        logo_file = fig_dir + '../NOC_Colour.png'
+        filename_ens = get_latest_filename(np.datetime64('now'), tail='Z-surge_classa_ens-surge.nc')
+        filename_det = get_latest_filename(np.datetime64('now'), tail='Z-surge_classa_det-surge.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
         dirname = '/Users/jelt/Downloads/'
         fig_dir = dirname + "ensembles_latest/"
