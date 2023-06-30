@@ -145,7 +145,7 @@ class Ensemble:
         axin.axis('off')
 
 
-        plt.show()
+        #plt.show()
 
         ## OUTPUT FIGURES - svg
         fname = ofile.replace('.svg', '_' + str(station_id).zfill(4) + '.svg')
@@ -183,5 +183,5 @@ if __name__ == '__main__':
         ds_det = xr.load_dataset(dirname + filename_det)
         print(f'Processing {dirname + filename_det}')
 
-    for station_id in range(2): #range(47):
+    for station_id in range(47):
         ens = Ensemble(ds_ens=ds_ens, ds_det=ds_det, station_id=station_id)
