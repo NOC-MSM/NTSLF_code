@@ -262,7 +262,7 @@ class Animate:
 
         ## title
         f.suptitle(self.suptitle_str, fontsize=16, y=0.98) # label
-        a.set_title(self.title_str, fontsize=8)  # timestamp
+        a.set_title(f'Forecast produced at: {self.title_str}', fontsize=8)  # timestamp
 
         ## Colorbar
         cax = f.add_axes([0.78, 0.12, 0.02, 0.76])  # RHS
