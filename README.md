@@ -5,18 +5,20 @@ The idea is that this would be a good place to keep code for the autogeneration 
 
 At present (Jul'23) there are two scripts:
 
-**Animations of sea level and surge**
+---
 
-surge_anim.py
+**Animations of sea level and surge**: surge_anim.py
 
-![surge_anom_latest_0001](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/80582568-d33e-4deb-b4a7-15cd1ef1f1e6)
+Example frames:
+
+![ssh_latest_0240](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/7d785f34-f677-4383-b35f-97e6b68bda5b)
+![surge_anom_latest_0240](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/03b5e4f8-718c-43db-93b2-219d8813c615)
+
 
 ---
 
-**Time series plots of 7-day surge forecast using the meteorological forcing ensemble.**
+**Time series plots of 7-day surge forecast using the meteorological forcing ensemble**: surge_ens.py
 
-surge_ens.py
-
-  (This is experimental)
+(This is experimental)
   
-  ![Liverpool surge forecast ensemble example](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/5efd4422-1e82-438b-a4c0-e822572d9db1)
+![Liverpool surge forecast ensemble example](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/5efd4422-1e82-438b-a4c0-e822572d9db1)
