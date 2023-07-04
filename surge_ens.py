@@ -167,7 +167,7 @@ class Ensemble:
         axin.axis('off')
 
         ## z0 note
-        ax0.annotate(f"inc. fake z0",
+        ax0.annotate(f"Issues:\n*fake z0\n*Used model tide\n*duplicate timestamps are for debugging\n*swap panels to align HT",
                    xy=(ax0.get_xlim()[0] + 0.1, ax0.get_ylim()[0] ),
                    fontsize=12,
                    xycoords='data',
