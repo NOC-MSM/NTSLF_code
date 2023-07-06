@@ -11,6 +11,7 @@ A new environment was build as follows::
     conda activate /work/jelt/conda-env/ntslf_py39
     conda install netCDF4 numpy xarray matplotlib
     conda install cartopy
+    conda install pysftp
 
 If already built:
     module load anaconda/5-2021
