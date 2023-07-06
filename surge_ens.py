@@ -275,7 +275,7 @@ class Ensemble:
                    xycoords='data',
                    horizontalalignment='left',
                    verticalalignment='top')
-        plt.show()
+        #plt.show()
 
         ## OUTPUT FIGURES - svg
         fname = ofile.replace('.svg', '_' + str(station_id).zfill(4) + '_v3.svg')
