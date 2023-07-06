@@ -41,6 +41,7 @@ from socket import gethostname
 import datetime
 from datetime import timezone
 import pytz
+from sftp_tools import Uploader
 
 MIN_LAT = 46.55
 MAX_LAT = 61
@@ -385,6 +386,9 @@ if __name__ == '__main__':
                           filename=filename_surge,
                           ofile_svg=fig_dir+'surge_anom_latest/surge_anom_latest.svg',
                           ofile_gif=fig_dir+'surge_anom_latest.gif')
+
+        Uploader(local_dir=fig_dir+"surge_anom_latest/",
+                 remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
     except:
         print(f'Filename: {filename_surge} not processed')
 
@@ -408,6 +412,9 @@ if __name__ == '__main__':
                           filename=filename_ssh,
                           ofile_svg=fig_dir+'ssh_latest/ssh_latest.svg',
                           ofile_gif=fig_dir+'ssh_latest.gif')
+
+        Uploader(local_dir=fig_dir+"ssh_latest/",
+                 remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
 
     except:
         print(f'Filename: {filename_ssh} not processed')

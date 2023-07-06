@@ -20,6 +20,8 @@ import numpy as np
 import xarray as xr
 from socket import gethostname
 import datetime
+from sftp_tools import Uploader
+
 
 def get_latest_filename(tail:str='Z-surge_noc_det-surge.nc') -> str:
     """ Get latest file from list. E.g. *-surge_noc_det-surge.nc """
@@ -405,3 +407,6 @@ if __name__ == '__main__':
 
     for station_id in range(47):
         ens = Ensemble(ds_ens=ds_ens, ds_det=ds_det, station_id=station_id)
+
+    Uploader(local_dir=fig_dir,
+             remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
