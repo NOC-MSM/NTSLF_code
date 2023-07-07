@@ -68,7 +68,10 @@ class Uploader:
             logging.critical('Invalid Hostname.')
 
         except pysftp.ConnectionException:
-            logging.critical(f'Invalid username: {self.username}, password: {self.password} or '
+            logging.critical(f'ConnectionException. username: {self.username}, password: {self.password} or '
+                             'remote directory path: {self.remote_dir}')
+        except pysftp.AuthenticationException:
+            logging.critical(f'AuthenticationException. username: {self.username}, password: {self.password} or '
                              'remote directory path: {self.remote_dir}')
 
         except FileNotFoundError:
