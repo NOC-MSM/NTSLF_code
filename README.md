@@ -4,6 +4,9 @@
 The idea is that this would be a good place to keep code for the autogeneration of NTSLF plots.
 
 At present (Jul'23) there are two scripts:
+Upon completion of image file creation, both scripts sftp the SVG files to::
+
+        livftp.noc.ac.uk/local/users/ntslf/pub/ntslf_surge_animation/
 
 ---
 
