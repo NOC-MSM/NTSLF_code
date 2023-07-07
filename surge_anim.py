@@ -414,8 +414,12 @@ if __name__ == '__main__':
                           ofile_svg=fig_dir+'ssh_latest/ssh_latest.svg',
                           ofile_gif=fig_dir+'ssh_latest.gif')
 
-        Uploader(local_dir=fig_dir+"ssh_latest/",
-                 remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
-
     except:
         print(f'Filename: {filename_ssh} not processed')
+
+    try:
+        Uploader(local_dir=fig_dir+"ssh_latest/",
+                 remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
+    except:
+        print(f'sftp upload from {fig_dir+"ssh_latest/"} failed')
+
