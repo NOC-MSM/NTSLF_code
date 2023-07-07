@@ -280,7 +280,7 @@ class Animate:
         #cbar.ax.yaxis.set_ticks_position('left')
         cbar.ax.tick_params(labelsize=8)
         cbar.ax.tick_params(length=0)
-        cbar.ax.yaxis.set_tick_params(pad=0)
+        cbar.ax.yaxis.set_tick_params(pad=2)
 
 
         ## Met Office credit
