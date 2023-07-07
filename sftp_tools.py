@@ -25,7 +25,7 @@ class Uploader:
         self.remote_dir = remote_dir
 
         fmt = '%(asctime)s | %(levelname)s | %(message)s'
-        logging.basicConfig(level=logging.DEBUG,
+        logging.basicConfig(level=logging.INFO,
                             format=fmt,
                             handlers=[logging.StreamHandler(),
                                       logging.FileHandler("sftp.log")])
