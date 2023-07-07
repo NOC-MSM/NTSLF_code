@@ -396,9 +396,9 @@ if __name__ == '__main__':
         print(f"Do not recognise hostname: {gethostname()}")
 
 
-    station_id = 9
+    station_id = 9 # Liverpool
 
-    if(1):#try:
+    if(1): #try:
         ds_ens = xr.load_dataset(dirname + filename_ens)
         print(f'Processing {dirname + filename_ens}')
 
