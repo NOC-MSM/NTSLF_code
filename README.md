@@ -10,7 +10,7 @@ Upon completion of image file creation, both scripts sftp the SVG files to:
 
 ---
 
-**Animations of sea level and surge**: surge_anim.py
+**Animations of sea level and surge**: (`surge_anim.py`)
 
 Example frames:
 
@@ -20,7 +20,7 @@ Example frames:
 
 ---
 
-**Time series plots of 7-day surge forecast using the meteorological forcing ensemble**: surge_ens.py
+**Time series plots of 7-day surge forecast using the meteorological forcing ensemble**: (`surge_ens.py`)
 
 (This is experimental)
   
