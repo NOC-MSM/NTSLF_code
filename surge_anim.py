@@ -43,6 +43,7 @@ import datetime
 from datetime import timezone
 import pytz
 from sftp_tools import Uploader
+plt.rcParams['svg.fonttype'] = 'none'
 
 MIN_LAT = 46.55
 MAX_LAT = 61
