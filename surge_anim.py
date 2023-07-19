@@ -286,6 +286,7 @@ class Animate:
         ## Met Office credit
         a.annotate('data source: Met Office',
                    xy=(self.lon_bounds[0] + 0.1, self.lat_bounds[0] + 0.1),
+                   family='sans-serif',
                    fontsize=6,
                    xycoords = self.data_crs._as_mpl_transform(a),
                    #xycoords='data',
@@ -311,6 +312,7 @@ class Animate:
         a.annotate(snapshot_timestamp,
                    xy=(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1),
                    xycoords = self.data_crs._as_mpl_transform(a),
+                   family='sans-serif',
                    fontsize=6,
                    horizontalalignment='right',
                    verticalalignment='bottom'
@@ -324,6 +326,7 @@ class Animate:
                    xytext=(LIV_LON, LIV_LAT),
                    xycoords=self.data_crs._as_mpl_transform(a),#'data',
                    textcoords=self.data_crs._as_mpl_transform(a),#'data',
+                   family='sans-serif',
                    fontsize=6,
                    horizontalalignment='left',
                    verticalalignment='top')
@@ -336,6 +339,7 @@ class Animate:
                    xytext=(SOT_LON, SOT_LAT),
                    xycoords=self.data_crs._as_mpl_transform(a),#'data',
                    textcoords=self.data_crs._as_mpl_transform(a),#'data',
+                   family='sans-serif',
                    fontsize=6,
                    horizontalalignment='center',
                    verticalalignment='bottom')
