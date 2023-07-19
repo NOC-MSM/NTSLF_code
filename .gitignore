@@ -1,6 +1,6 @@
 # project specific files
 config.py
-
+sftp.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
