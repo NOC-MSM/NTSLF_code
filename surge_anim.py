@@ -246,15 +246,15 @@ class Animate:
 
     def save_svg(self, fig, fname:str):
         fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
-        os.system(f'scour --set-precision=5  -i {fname} -o {fname.replace(".svg","_v2.svg")}')
+        os.system(f'scour --set-precision=4  -i {fname} -o {fname.replace(".svg","_v2.svg")}')
         os.system(f'mv {fname.replace(".svg","_v2.svg")} {fname}')
 
         #with fileinput.FileInput(fname, inplace=True, backup='.bak') as file:
         with fileinput.FileInput(fname, inplace=True) as file:
             for line in file:
                 new_line = line \
-                    .replace("width=\"277.24pt\" height=\"300.67pt\"", "") \
-                    .replace("width=\"284.88pt\" height=\"300.67pt\"", "") \
+                    .replace("width=\"277.2pt\" height=\"300.7pt\"", "") \
+                    .replace("width=\"284.9pt\" height=\"300.7pt\"", "") \
                     .replace("font=\"6px 'sans-serif'\"", "font-size=\"6px\" font-family=\"sans-serif\"") \
                     .replace("font=\"8px 'sans-serif'\"", "font-size=\"8px\" font-family=\"sans-serif\"") \
                     .replace("font=\"9px 'sans-serif'\"", "font-size=\"9px\" font-family=\"sans-serif\"") \
