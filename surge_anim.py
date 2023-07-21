@@ -43,6 +43,7 @@ import datetime
 from datetime import timezone
 import pytz
 from sftp_tools import Uploader
+import fileinput
 plt.rcParams['svg.fonttype'] = 'none'
 
 MIN_LAT = 46.55
@@ -226,7 +227,7 @@ class Animate:
             ## OUTPUT FIGURES - svg
             fname = self.ofile_svg.replace('.svg', '_' + str(count).zfill(4) + '.svg')
             print(count, fname)
-            f.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+            self.save_svg(fig=f, fname=fname)
             plt.close(f)
 
             files.append(fname)
@@ -242,6 +243,21 @@ class Animate:
             os.system(f'cp {self.ofile_gif} {fig_dir + self.filename.replace(".nc", ".gif")}')
 
 
+    def save_svg(self, fig, fname:str):
+        fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+        os.system(f'scour --set-precision=5  -i {fname} -o {fname.replace(".svg","_v2.svg")}')
+
+        with fileinput.FileInput(fname.replace(".svg","_v2.svg"), inplace=True, backup='.bak') as file:
+            for line in file:
+                new_line = line \
+                    .replace("width=\"277.24pt\" height=\"300.67pt\"", "") \
+                    .replace("font=\"6px 'sans-serif'\"", "font-size=\"6px\" font-family=\"sans-serif\"") \
+                    .replace("font=\"8px 'sans-serif'\"", "font-size=\"8px\" font-family=\"sans-serif\"") \
+                    .replace("font=\"9px 'sans-serif'\"", "font-size=\"9px\" font-family=\"sans-serif\"") \
+                    .replace("font=\"16px 'sans-serif'\"", "font-size=\"16px\" font-family=\"sans-serif\"")
+                if "Logo placeholder" in new_line:
+                    new_line = "<image href=\"https://noc.ac.uk/files/logos/logo2023-noc.svg\" width=\"40\" height=\"40\" x=\"190\" y=\"252\"/>"
+                print(new_line, end='') # remove image size spec
 
     def make_frame(self, count:int=0, cmap_str="PiYG_r"):
 
@@ -284,34 +300,42 @@ class Animate:
         cbar.ax.yaxis.set_tick_params(pad=2)
 
 
+
+
+        ## Logo
+        if(0):
+            im = plt.imread(get_sample_data(logo_file))
+            # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
+            newax = f.add_axes([0.27, 0.14, 0.1, 0.1], zorder=1)  ## lower left
+            newax.imshow(im)
+            newax.axis('off')
+        else:  ## Logo placeholder
+            a.annotate('Logo placeholder',
+                   xy=(self.lon_bounds[0] + 0.1, self.lat_bounds[0] + 0.1),
+                   fontsize=6,
+                   xycoords = self.data_crs._as_mpl_transform(a),
+                   horizontalalignment='left',
+                   verticalalignment='bottom')
         ## Met Office credit
         a.annotate('data source: Met Office',
-                   xy=(self.lon_bounds[0] + 0.1, self.lat_bounds[0] + 0.1),
-                   family='sans-serif',
+                   xy=(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1),
                    fontsize=6,
                    xycoords = self.data_crs._as_mpl_transform(a),
                    #xycoords='data',
-                   horizontalalignment='left',
+                   horizontalalignment='right',
                    verticalalignment='bottom')
-
-        ## Logo
-        im = plt.imread(get_sample_data(logo_file))
-        # newax = f.add_axes([0.7, 0.12, 0.2, 0.2], zorder=1) ## lower right
-        newax = f.add_axes([0.27, 0.14, 0.1, 0.1], zorder=1)  ## lower left
-        newax.imshow(im)
-        newax.axis('off')
 
         ## Clock
         # clock_ax = f.add_axes([0.52, 0.35, 0.1, 0.1], zorder=1)  ## over UK
         dt64_now, timezone_str = to_localtime(dt64(self.time[count]))
-        #clock_ax = f.add_axes([0.62, 0.18, 0.1, 0.1], zorder=1)  ## lower right
-        clock_ax = f.add_axes([0.65, 0.15, 0.1, 0.1], zorder=1)  ## lower right
+        #clock_ax = f.add_axes([0.65, 0.15, 0.1, 0.1], zorder=1)  ## lower right
+        clock_ax = f.add_axes([0.65, 0.30, 0.1, 0.1], zorder=1)  ## mid lower right
         clock(clock_ax, dt64_now)
 
         ## snapshot timestamp.
         snapshot_timestamp = np.datetime_as_string(dt64_now, unit="m").replace('T', ' ')+" "+timezone_str
         a.annotate(snapshot_timestamp,
-                   xy=(self.lon_bounds[1] - 0.1, self.lat_bounds[0] + 0.1),
+                   xy=(self.lon_bounds[1] - 0.1, 50.0),
                    xycoords = self.data_crs._as_mpl_transform(a),
                    family='sans-serif',
                    fontsize=6,
@@ -320,20 +344,19 @@ class Animate:
                    )
 
         ## Liverpool
-        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4,
+        a.plot([LIV_LON], [LIV_LAT], 'o', color='gray', markersize=4, alpha=0.6,
                transform=self.data_crs)
         a.annotate('Liverpool',
                    xy=(LIV_LON, LIV_LAT),
                    xytext=(LIV_LON, LIV_LAT),
                    xycoords=self.data_crs._as_mpl_transform(a),#'data',
                    textcoords=self.data_crs._as_mpl_transform(a),#'data',
-                   family='sans-serif',
                    fontsize=6,
                    horizontalalignment='left',
                    verticalalignment='top')
 
         ## Southampton
-        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4,
+        a.plot([SOT_LON], [SOT_LAT], 'o', color='gray', markersize=4, alpha=0.6,
                transform=self.data_crs)
         a.annotate('Southampton',
                    xy=(SOT_LON, SOT_LAT),
