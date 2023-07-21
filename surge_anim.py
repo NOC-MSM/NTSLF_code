@@ -247,8 +247,10 @@ class Animate:
     def save_svg(self, fig, fname:str):
         fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
         os.system(f'scour --set-precision=5  -i {fname} -o {fname.replace(".svg","_v2.svg")}')
+        os.system(f'mv {fname.replace(".svg","_v2.svg")} {fname}')
 
-        with fileinput.FileInput(fname.replace(".svg","_v2.svg"), inplace=True, backup='.bak') as file:
+        #with fileinput.FileInput(fname, inplace=True, backup='.bak') as file:
+        with fileinput.FileInput(fname, inplace=True) as file:
             for line in file:
                 new_line = line \
                     .replace("width=\"277.24pt\" height=\"300.67pt\"", "") \
