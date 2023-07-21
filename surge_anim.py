@@ -12,6 +12,7 @@ A new environment was build as follows::
     conda install netCDF4 numpy xarray matplotlib
     conda install cartopy
     conda install pysftp
+    conda install fileinput
 
 If already built:
     module load anaconda/5-2021
@@ -337,7 +338,6 @@ class Animate:
         a.annotate(snapshot_timestamp,
                    xy=(self.lon_bounds[1] - 0.1, 50.0),
                    xycoords = self.data_crs._as_mpl_transform(a),
-                   family='sans-serif',
                    fontsize=6,
                    horizontalalignment='right',
                    verticalalignment='bottom'
