@@ -12,7 +12,7 @@ A new environment was build as follows::
     conda install netCDF4 numpy xarray matplotlib
     conda install cartopy
     conda install pysftp
-    conda install fileinput
+    conda install scour
 
 If already built:
     module load anaconda/5-2021
@@ -254,6 +254,7 @@ class Animate:
             for line in file:
                 new_line = line \
                     .replace("width=\"277.24pt\" height=\"300.67pt\"", "") \
+                    .replace("width=\"284.88pt\" height=\"300.67pt\"", "") \
                     .replace("font=\"6px 'sans-serif'\"", "font-size=\"6px\" font-family=\"sans-serif\"") \
                     .replace("font=\"8px 'sans-serif'\"", "font-size=\"8px\" font-family=\"sans-serif\"") \
                     .replace("font=\"9px 'sans-serif'\"", "font-size=\"9px\" font-family=\"sans-serif\"") \
