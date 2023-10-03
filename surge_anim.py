@@ -276,6 +276,7 @@ class Animate:
         sca = a.contourf(self.lon, self.lat, self.var[count,:,:],
                          levels=self.levels,
                          cmap=cmap0,
+                         extend='both',
                          transform=self.data_crs)
         con = a.contour(self.lon, self.lat, self.var[count,:,:],
                         levels=[0],
@@ -393,9 +394,11 @@ if __name__ == '__main__':
         fig_dir = dirname
         #ofile_gif = fig_dir + 'surge_anom_latest.gif'
         #ofile_svg = fig_dir + 'surge_anom_latest.svg'
-        filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
+        #filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
+        filename_surge = '20231002T1200Z-surge_noc_det-surge.nc'
         logo_file = '/Users/jelt/Library/CloudStorage/OneDrive-NOC/presentations/figures/logos/NOC_Colour.png'
-        filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+        #filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
+        filename_ssh = "20231002T1200Z-surge_noc_det-ssh.nc"
 
     else:
         print(f"Do not recognise hostname: {gethostname()}")
