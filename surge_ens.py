@@ -379,15 +379,15 @@ class Ensemble:
 if __name__ == '__main__':
 
     if "LJOB" in gethostname().upper():  # Production job
-        dirname = '/projectsa/surge_archive/surge_forecast/'
+        dirname = '/projectsa/surge_archive/surge_forecast/' # + str(datetime.datetime.now().year) + '/'
         fig_dir = '/projectsa/surge_archive/figures/ensembles_latest/'
         ofile = fig_dir + 'surge_ens_latest.svg'
         logo_file = fig_dir + '../NOC_Colour.png'
         filename_ens = get_latest_filename(tail='Z-surge_classa_ens-surge.nc')
         filename_det = "latest_surge_classa_det-surge.nc" #get_latest_filename(np.datetime64('now'), tail='Z-surge_classa_det-surge.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
-        dirname = '/Users/jelt/Downloads/'
-        fig_dir = dirname + "ensembles_latest/"
+        dirname = '/Users/jelt/Downloads/' + str(datetime.datetime.now().year) + '/'
+        fig_dir = '/Users/jelt/Downloads/ensembles_latest/'
         ofile = fig_dir + 'surge_ens_latest.svg'
         filename_ens = "20230628T1800Z-surge_classa_ens-surge.nc"
         logo_file = '/Users/jelt/Library/CloudStorage/OneDrive-NOC/presentations/figures/logos/NOC_Colour.png'

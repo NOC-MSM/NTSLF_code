@@ -378,7 +378,7 @@ class Animate:
 if __name__ == '__main__':
 
     if "LJOB" in gethostname().upper():  # Production job
-        dirname = '/projectsa/surge_archive/surge_forecast/'
+        dirname = '/projectsa/surge_archive/surge_forecast/' # + str(datetime.datetime.now().year) + '/'
         # filename_surge = '20220320T1200Z-surge_noc_det-surge.nc'
         # filename_ssh = "20220323T1200Z-surge_noc_det-ssh.nc"
         fig_dir = '/projectsa/surge_archive/figures/'
@@ -390,8 +390,8 @@ if __name__ == '__main__':
         #filename_ssh = get_filename_today(np.datetime64('now'), tail='T1200Z-surge_noc_det-ssh.nc')
         filename_ssh = get_latest_filename_today(np.datetime64('now'), tail='Z-surge_noc_det-ssh.nc')
     elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
-        dirname = '/Users/jelt/Downloads/'
-        fig_dir = dirname
+        dirname = '/Users/jelt/Downloads/' + str(datetime.datetime.now().year) + '/'
+        fig_dir = '/Users/jelt/Downloads/'
         #ofile_gif = fig_dir + 'surge_anom_latest.gif'
         #ofile_svg = fig_dir + 'surge_anom_latest.svg'
         #filename_surge = '20220327T0600Z-surge_noc_det-surge.nc'
