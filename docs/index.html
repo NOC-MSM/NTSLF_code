@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Gallery</title>
+    <script>
+        let currentImageIndex = 1;
+        let numImages = 5;
+
+        function showImage() {
+            let imageElement = document.getElementById("image");
+            imageElement.src = "image" + currentImageIndex + ".jpg";
+            imageElement.alt = "Frame " + currentImageIndex;
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex % numImages) + 1;
+            showImage();
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 2 + numImages) % numImages + 1;
+            showImage();
+        }
+    </script>
+</head>
+<body>
+    <img id="image" src="image1.jpg" alt="Frame 1">
+    <br>
+    <button onclick="prevImage()">Previous</button>
+    <button onclick="nextImage()">Next</button>
+</body>
+</html>
