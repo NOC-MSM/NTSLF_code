@@ -6,9 +6,14 @@
         let currentImageIndex = 1;
         let numImages = 240;
 
+        function pad(num, size) {
+            num = num.toString();
+            while (num.length < size) num = "0" + num;
+            return num;
+        }
         function showImage() {
             let imageElement = document.getElementById("image");
-            imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + currentImageIndex + ".svg";
+            imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
             imageElement.alt = "Frame " + currentImageIndex;
         }
 
