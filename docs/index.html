@@ -14,7 +14,7 @@
         function showImage() {
             let imageElement = document.getElementById("image");
             imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
-            imageElement.alt = "Frame " + currentImageIndex;
+            imageElement.alt = "Frame " + pad(currentImageIndex, 4);
         }
 
         function nextImage() {
@@ -29,7 +29,7 @@
     </script>
 </head>
 <body>
-    <img id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
+    <img width="50%" id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
     <br>
     <button onclick="prevImage()">Previous</button>
     <button onclick="nextImage()">Next</button>
