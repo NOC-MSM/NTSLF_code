@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Image Gallery</title>
     <script>
         let currentImageIndex = 1;
-        let numImages = 5;
+        let numImages = 240;
 
         function showImage() {
             let imageElement = document.getElementById("image");
-            imageElement.src = "image" + currentImageIndex + ".jpg";
+            imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + currentImageIndex + ".svg";
             imageElement.alt = "Frame " + currentImageIndex;
         }
 
@@ -24,7 +24,7 @@
     </script>
 </head>
 <body>
-    <img id="image" src="image1.jpg" alt="Frame 1">
+    <img id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
     <br>
     <button onclick="prevImage()">Previous</button>
     <button onclick="nextImage()">Next</button>
