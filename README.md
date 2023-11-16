@@ -16,8 +16,9 @@ Example frames:
 
 ![ssh_latest_0240](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/7d785f34-f677-4383-b35f-97e6b68bda5b)
 ![surge_anom_latest_0240](https://github.com/NOC-MSM/NTSLF_code/assets/22616872/03b5e4f8-718c-43db-93b2-219d8813c615)
+![surge_anom_latest_0240](https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg)
 
-![Preview surge](https://noc-msm.github.io/NTSLF_code/)
+### [Preview surge](https://noc-msm.github.io/NTSLF_code/)
 
 ---
 
