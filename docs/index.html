@@ -3,7 +3,7 @@
 <head>
     <title>Image Gallery</title>
     <script>
-        let currentImageIndex = 1;
+        let currentImageIndex = 120;
         let numImages = 240;
 
         function pad(num, size) {
@@ -29,7 +29,8 @@
     </script>
 </head>
 <body>
-    <img width="50%" id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
+    <img width=50% id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
+    <img class="img-responsive" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" style="bottom:3.3%;position:absolute;width:14.6%;height:auto;left:66.4%;">
     <br>
     <button onclick="prevImage()">Previous</button>
     <button onclick="nextImage()">Next</button>
