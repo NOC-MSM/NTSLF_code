@@ -14,7 +14,7 @@
         function showImage() {
             let imageElement = document.getElementById("image");
             imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
-            imageElement.alt = "Frame " + pad(currentImageIndex, 4);
+            imageElement.alt = "surge frame " + pad(currentImageIndex, 4);
         }
 
         function nextImage() {
@@ -27,11 +27,30 @@
             showImage();
         }
     </script>
+
+    <style>
+        #image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        #image {
+            display: block;
+        }
+
+        #overlay {
+            position: absolute;
+            bottom: 3.3%;
+            width:14.6%;height:auto;left:66.4%;
+        }
+    </style>
 </head>
 <body>
-    <img width=50% id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="Frame 1">
-    <img class="img-responsive" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" style="bottom:3.3%;position:absolute;width:14.6%;height:auto;left:66.4%;">
-    <br>
+<div id="image-container">
+    <img width=50% id="image" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
+    <img id="overlay" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" alt="NOC logo">
+</div>
+<br>
     <button onclick="prevImage()">Previous</button>
     <button onclick="nextImage()">Next</button>
 </body>
