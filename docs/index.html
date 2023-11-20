@@ -34,6 +34,10 @@
             currentImageIndex = (currentImageIndex - 2 + numImages) % numImages + 1;
             showImage();
         }
+
+
+
+
     </script>
 
     <style>
@@ -79,8 +83,8 @@
         </div>
     </td>
     </tr>
-    <tr colspan=2>
-        <td>
+    <tr>
+        <td colspan="2">
             <button onclick="prevImage()">Previous</button>
             <button onclick="nextImage()">Next</button>
         </td>
@@ -92,28 +96,88 @@
 Preview of data made available on <a href="https://ntslf.org/storm-surges/storm-surge-model">NTSLF pages</a>.
 <BR>
 This collaboration was facilitated by the <a href="https://oceanprediction.org/">National Partnership for Ocean Prediction</a>
+<BR>
+Return to <a href="https://github.com/NOC-MSM/NTSLF_code">NTSLF_code</a> repository.
 
 <HR>
 <BR>
 Work in progress <i>to display ensemble information</i>
 <BR><BR>    
-    <table>
-    <tr>
-        <td>
-            <img id="image1" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009.svg" alt="ensemble frame1">
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img id="image1" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009_v2.svg" alt="ensemble frame2">
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img id="image1" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009_v3.svg" alt="ensemble frame3">
-        </td>
-    </tr>
-    </table>
-    
-</body>
+
+    <h1>Select a location to display</h1>
+
+    <!-- create a list of dropdown elements for port selection -->
+    <select id="image-select">
+        <option value="0009">Liverpool </option>
+        <option value="0000">AvonmouthPortbury </option>
+        <option value="0001">Bournemouth </option>
+        <option value="0002">Cromer </option>
+        <option value="0003">Dover </option>
+        <option value="0004">Harwich </option>
+        <option value="0005">Heysham </option>
+        <option value="0006">HinkleyPoint </option>
+        <option value="0007">Ilfracombe </option>
+        <option value="0008">Immingham </option>
+        <option value="0010">Lowestoft </option>
+        <option value="0011">Newhaven </option>
+        <option value="0012">Newlyn </option>
+        <option value="0013">NorthShields </option>
+        <option value="0014">Plymouth </option>
+        <option value="0015">Portsmouth </option>
+        <option value="0016">Sheerness </option>
+        <option value="0017">StMarys </option>
+        <option value="0018">Weymouth </option>
+        <option value="0019">Whitby </option>
+        <option value="0020">Workington </option>
+        <option value="0021">Barmouth </option>
+        <option value="0022">Fishguard </option>
+        <option value="0023">Holyhead </option>
+        <option value="0024">Llandudno </option>
+        <option value="0025">MilfordHaven </option>
+        <option value="0026">Mumbles </option>
+        <option value="0027">Newport </option>
+        <option value="0028">Bangor </option>
+        <option value="0029">Portrush </option>
+        <option value="0030">Aberdeen </option>
+        <option value="0031">Kinlochbervie </option>
+        <option value="0032">Leith </option>
+        <option value="0033">Lerwick </option>
+        <option value="0034">Millport </option>
+        <option value="0035">PortEllen </option>
+        <option value="0036">Portpatrick </option>
+        <option value="0037">Stornoway </option>
+        <option value="0038">Tobermory </option>
+        <option value="0039">Ullapool </option>
+        <option value="0040">Wick </option>
+        <option value="0041">PortErin </option>
+        <option value="0042">StHellier </option>
+        <option value="0043">SheernessPP </option>
+        <option value="0044">SouthendPP </option>
+        <option value="0045">SheernessAlt </option>
+        <option value="0046">HeyshamAlt </option>
+    </select>
+    <!-- create initial images - one for each protoype style -->
+    <BR>
+    <img id="ens-image1" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009.svg" alt="Ens Image 1">
+    <img id="ens-image2" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009_v2.svg" alt="Ens Image 2">
+    <img id="ens-image3" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_0009_v3.svg" alt="Ens Image 3">
+
+<script>
+    // get the select element by its id
+    let select = document.getElementById("image-select");
+    let ens_img1 = document.getElementById("ens-image1");
+    let ens_img2 = document.getElementById("ens-image2");
+    let ens_img3 = document.getElementById("ens-image3");
+
+    // add an event listener to the select element
+    select.addEventListener("change", function() {
+        ens_img1.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_"+ select.value +".svg";
+        ens_img1.alt = select.value; ens_img1.style.display = "block";
+        ens_img2.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_"+ select.value +"_v2.svg";
+        ens_img2.alt = select.value; ens_img2.style.display = "block";
+        ens_img3.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_ens_latest_"+ select.value +"_v3.svg";
+        ens_img3.alt = select.value; ens_img3.style.display = "block";
+    });
+</script>
+    </body>
 </html>
