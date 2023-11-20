@@ -42,11 +42,11 @@
             display: inline-block;
         }
 
-        #image1 {
+        #image {
             display: block;
         }
         
-        #image2 {
+        #button {
             display: block;
         }
 
@@ -69,19 +69,19 @@
     <tr>
     <td>
         <div id="image-container">
-        <img id="image1" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
+        <img id="image" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
         <img id="overlay1" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" alt="NOC logo">
         </div>
     </td>
     <td>
         <div id="image-container">
-        <img id="image2" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/ssh_latest_0120.svg" alt="surge frame">
+        <img id="image" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/ssh_latest_0120.svg" alt="surge frame">
         <img id="overlay2" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" alt="NOC logo">
         </div>
     </td>
     </tr>
     <tr colspan=2>
-        <td align-items:center>
+        <td id="button">
             <button onclick="prevImage()">Previous</button>
             <button onclick="nextImage()">Next</button>
         </td>
