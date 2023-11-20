@@ -15,6 +15,8 @@
             let imageElement = document.getElementById("image");
             imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
             imageElement.alt = "surge frame " + pad(currentImageIndex, 4);
+            // Update the source attribute with a random query string to bypass the cache
+            imageElement.src = imageElement.src + "?" + Math.random();
         }
 
         function nextImage() {
