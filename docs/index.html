@@ -12,11 +12,17 @@
             return num;
         }
         function showImage() {
-            let imageElement = document.getElementById("image");
-            imageElement.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
-            imageElement.alt = "surge frame " + pad(currentImageIndex, 4);
+            let imageElement1 = document.getElementById("image1");
+            imageElement1.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_" + pad(currentImageIndex, 4) + ".svg";
+            imageElement1.alt = "surge frame " + pad(currentImageIndex, 4);
             // Update the source attribute with a random query string to bypass the cache
-            imageElement.src = imageElement.src + "?" + Math.random();
+            imageElement1.src = imageElement1.src + "?" + Math.random();
+            
+            let imageElement2 = document.getElementById("image2");
+            imageElement2.src = "https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/ssh_latest_" + pad(currentImageIndex, 4) + ".svg";
+            imageElement2.alt = "ssh frame " + pad(currentImageIndex, 4);
+            // Update the source attribute with a random query string to bypass the cache
+            imageElement2.src = imageElement2.src + "?" + Math.random();
         }
 
         function nextImage() {
@@ -53,13 +59,13 @@
     <tr>
     <td>
         <div id="image-container">
-        <img id="image" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
+        <img id="image1" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
         <img id="overlay" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" alt="NOC logo">
         </div>
     </td>
     <td>
         <div id="image-container">
-        <img id="image" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/surge_anom_latest_0120.svg" alt="surge frame">
+        <img id="image2" width="100%" src="https://ntslf.org/sites/ntslf/files/images/ntslf_surge_animation/ssh_latest_0120.svg" alt="surge frame">
         <img id="overlay" src="https://noc.ac.uk/files/logos/logo2023-noc.svg" alt="NOC logo">
         </div>
     </td>
