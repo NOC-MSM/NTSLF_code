@@ -35,6 +35,7 @@ from matplotlib.cbook import get_sample_data
 import matplotlib.ticker as ticker
 import matplotlib as mpl
 import os, glob
+import subprocess
 from math import cos, sin
 import cartopy.crs as ccrs  # mapping plots
 from cartopy.feature import NaturalEarthFeature
@@ -174,9 +175,11 @@ def make_gif(files, output, delay=100, repeat=True, **kwargs):
 
     loop = -1 if repeat else 0
     os.system('convert -delay %d -loop %d %s %s' % (delay, loop, " ".join(files), output.replace(".gif","_no_logo.gif")))
-    os.system('convert %s -coalesce -draw "image srcover 187,250 40,40 %s" %s' % (output.replace(".gif","_no_logo.gif"), logo_file, output))
+    os.chmod(output.replace(".gif","_no_logo.gif"), 0o755)  # -rwxr-xr-x
+    subprocess.run(['cp', logo_file, 'logo_file.png']) # problem with convert being able to get the logo from an other directory
+    args = ['convert', output.replace(".gif","_no_logo.gif"), '-coalesce', '-draw', 'image srcover 187,250 40,40 logo_file.png', output]
+    subprocess.run(args)
     os.chmod(output, 0o755)  # -rwxr-xr-x
-
 
 class Animate:
     def __init__(self,
