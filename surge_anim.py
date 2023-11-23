@@ -424,7 +424,7 @@ if __name__ == '__main__':
                           cmap_str = "PiYG_r",
                           filename=filename_surge,
                           ofile_svg=fig_dir+'surge_anom_latest/surge_anom_latest.svg',
-                          ofile_gif=fig_dir+'surge_anom_latest.gif')
+                          ofile_gif=fig_dir+'surge_anom_latest/surge_anom_latest.gif')
 
     except:
         print(f'Filename: {filename_surge} not processed')
@@ -453,7 +453,7 @@ if __name__ == '__main__':
                           cmap_str="bwr", # "seismic",
                           filename=filename_ssh,
                           ofile_svg=fig_dir+'ssh_latest/ssh_latest.svg',
-                          ofile_gif=fig_dir+'ssh_latest.gif')
+                          ofile_gif=fig_dir+'ssh_latest/ssh_latest.gif')
 
     except:
         print(f'Filename: {filename_ssh} not processed')
