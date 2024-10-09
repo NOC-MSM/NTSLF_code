@@ -1,0 +1,31 @@
+"""
+
+# Prototyping a surge ensemble plot
+
+Ideas:
+* move file generated with matlab script to the FTP server
+
+"""
+
+import glob, os
+import numpy as np
+import xarray as xr
+from socket import gethostname
+import datetime
+from sftp_tools import Uploader
+
+
+#######
+if __name__ == '__main__':
+
+    if "LJOB" in gethostname().upper():  # Production job
+        fig_dir = '/projectsa/surge_archive/figures/ensembles_latest/'
+    elif "LIVMAZ" in gethostname().upper():  # Debugging on local machine
+        fig_dir = '/Users/jelt/Downloads/ensembles_latest/'
+    else:
+        print(f"Do not recognise hostname: {gethostname()}")
+
+
+
+    Uploader(local_dir=fig_dir,
+             remote_dir="/local/users/ntslf/pub/ntslf_surge_animation/")
