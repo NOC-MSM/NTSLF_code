@@ -12,3 +12,14 @@ cd /login/jelt/GitHub/NTSLF_code/
 python surge_anim.py > surge_anim.log
 python surge_ens.py > surge_ens.log
 conda deactivate
+
+# Add process for generating ensemble surge plot for tidegauge network
+cd /login/surges/matlab/; module load matlab; matlab -nodesktop -nosplash -r autoplot_latestensemble;
+# Expected output: ??DIR??/EnsembleClassAOffset_res_latest.png
+
+# Add python script to move file to ftp server
+source /packages/lmodmodules/apps/anaconda/5-2021/bin/activate /work/jelt/conda-env/ntslf_py39
+source /etc/profile.d/modules.sh
+cd /login/jelt/GitHub/NTSLF_code/  
+python mv_plot_to_ftpserver.py > mv_plot_to_ftpserver.log
+conda deactivate
