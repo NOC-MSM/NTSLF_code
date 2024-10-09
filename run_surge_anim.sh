@@ -15,7 +15,7 @@ conda deactivate
 
 # Add process for generating ensemble surge plot for tidegauge network
 cd /login/surges/matlab/; module load matlab; matlab -nodesktop -nosplash -r autoplot_latestensemble;
-# Expected output: ??DIR??/EnsembleClassAOffset_res_latest.png
+# Expected output: /projectsa/surge_archive/figures/ensembles_latest/EnsembleClassAOffset_res_latest.png
 
 # Add python script to move file to ftp server
 source /packages/lmodmodules/apps/anaconda/5-2021/bin/activate /work/jelt/conda-env/ntslf_py39
