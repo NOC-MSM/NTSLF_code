@@ -245,7 +245,7 @@ class Animate:
         ## Make a backup copy of gif if the max surge is large enough
         if "surge_anom_latest" in self.ofile_gif and (self.var.max() > 1.0 or self.var.min() < -1.0):
             print(f'Backing up {self.ofile_gif}')
-            os.system(f'cp {self.ofile_gif} {fig_dir + self.filename.replace(".nc", ".gif")}')
+            os.system(f'cp {self.ofile_gif} {fig_dir + "surge_anom_archive/" + self.filename.replace(".nc", ".gif")}')
 
 
     def save_svg(self, fig, fname:str):
